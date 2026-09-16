@@ -1,0 +1,1469 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#123f35">
+  <meta name="description" content="영주시 사회적기업 30곳의 위치와 기업 체험, 협업 사회적가치를 살펴보는 교육용 지도">
+  <title>영주 사회적기업체험 지도</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%23123f35'/%3E%3Cpath d='M18 42c14-1 23-9 29-25 2 16-4 29-20 31-6 1-10-1-13-5 7-1 14-4 20-10-6 4-11 6-16 6z' fill='%23d7f75b'/%3E%3Ccircle cx='46' cy='18' r='6' fill='%23ffca57'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <style>
+:root {
+  --ink: #17352e;
+  --muted: #66766f;
+  --paper: #f8faf3;
+  --surface: #ffffff;
+  --line: #dce5dd;
+  --forest: #123f35;
+  --lime: #d8f65a;
+  --gold: #ffca57;
+  --food: #79bb41;
+  --education: #71c0c8;
+  --clothes: #9972c7;
+  --cleaning: #718195;
+  --manufacturing: #4d8dc8;
+  --festival: #ef9aad;
+  --shadow: 0 18px 50px rgba(25, 60, 50, .13);
+  color-scheme: light;
+  font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  min-width: 320px;
+  height: 100dvh;
+  overflow: hidden;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 8% 0%, rgba(216,246,90,.2), transparent 26rem),
+    linear-gradient(180deg, #f7f9f1 0%, #eef4ee 100%);
+}
+
+button, a { font: inherit; }
+button { color: inherit; }
+
+.skip-link {
+  position: fixed;
+  left: 1rem;
+  top: -5rem;
+  z-index: 9999;
+  padding: .8rem 1rem;
+  border-radius: .6rem;
+  color: white;
+  background: var(--forest);
+}
+
+.skip-link:focus { top: 1rem; }
+
+.start-screen { position: fixed; inset: 0; z-index: 10000; display: grid; place-items: center; padding: 1rem; background: radial-gradient(circle at 50% 28%, rgba(216,246,90,.24), transparent 24rem), #123f35; }
+.start-screen.hidden { display: none; }
+.start-card { width: min(34rem, 100%); padding: clamp(1.6rem, 5vw, 3rem); border-radius: 1.6rem; background: white; text-align: center; box-shadow: 0 28px 90px rgba(0,0,0,.38); }
+.start-card .start-logo { display: grid; place-items: center; width: 5.5rem; height: 4.2rem; margin: 0 auto 1.2rem; border-radius: 1.2rem 1.2rem 1.2rem .25rem; color: white; background: var(--forest); font-size: 1.15rem; font-weight: 950; }
+.start-card .start-logo span { color: var(--lime); }
+.start-card h1 { margin: 0; font-size: clamp(1.7rem, 5vw, 2.5rem); letter-spacing: -.06em; }
+.start-card p { margin: .75rem 0 1.5rem; color: var(--muted); line-height: 1.6; }
+.game-start-button { min-width: 12rem; min-height: 3.5rem; border: 0; border-radius: .9rem; color: #123f35; background: var(--lime); font-size: 1.08rem; font-weight: 950; cursor: pointer; box-shadow: 0 7px 0 #9ebd2d; }
+.game-start-button:active { transform: translateY(4px); box-shadow: 0 3px 0 #9ebd2d; }
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  max-width: none;
+  margin: 0 auto;
+  padding: .65rem clamp(.75rem, 2vw, 1.5rem);
+}
+
+.brand-block { display: flex; align-items: center; gap: 1rem; min-width: 0; }
+.brand-block h1 { margin: 0; font-size: clamp(1.12rem, 2vw, 1.55rem); letter-spacing: -.04em; }
+.brand-block p { margin: .24rem 0 0; color: var(--muted); font-size: .91rem; }
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 4.4rem;
+  height: 3.1rem;
+  flex: 0 0 auto;
+  border-radius: 1rem 1rem 1rem .2rem;
+  color: white;
+  background: var(--forest);
+  font-weight: 900;
+  letter-spacing: -.06em;
+  box-shadow: 0 8px 20px rgba(18,63,53,.2);
+}
+
+.brand-mark span { color: var(--lime); }
+.top-actions { display: flex; align-items: center; gap: .65rem; }
+
+.guide-button, .quiet-button, .map-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.7rem;
+  padding: .72rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: .75rem;
+  background: rgba(255,255,255,.82);
+  color: var(--ink);
+  text-decoration: none;
+  font-size: .9rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.guide-button:hover, .quiet-button:hover, .map-button:hover { background: white; border-color: #abc3b4; }
+.app-shell { max-width: none; height: calc(100dvh - 4.5rem); margin: 0 auto; padding: 0 clamp(.4rem, 1vw, .85rem) .45rem; }
+
+.progress-strip {
+  display: grid;
+  grid-template-columns: minmax(14rem, auto) 1fr minmax(9rem, auto);
+  align-items: center;
+  gap: 1.4rem;
+  margin: 0 0 .55rem;
+  padding: .55rem .8rem;
+  border: 1px solid rgba(18,63,53,.08);
+  border-radius: 1.15rem;
+  background: rgba(255,255,255,.82);
+  box-shadow: 0 8px 28px rgba(18,63,53,.06);
+  backdrop-filter: blur(10px);
+}
+
+.synergy-summary-card, .score-card { display: flex; align-items: center; gap: .75rem; }
+.synergy-summary-card small, .score-card small { display: block; margin-bottom: .12rem; color: var(--muted); font-size: .77rem; }
+.synergy-summary-card strong, .score-card strong { font-size: 1.04rem; }
+.level-icon { display: grid; place-items: center; width: 2.7rem; height: 2.7rem; border-radius: .85rem; background: #eff8c8; font-size: 1.35rem; }
+.score-card { justify-content: flex-end; text-align: right; }
+.score-card strong { color: #276d4e; font-size: 1.23rem; }
+.progress-copy { display: flex; justify-content: space-between; margin-bottom: .44rem; font-size: .82rem; }
+.progress-copy span { color: var(--muted); }
+.progress-track { height: .62rem; overflow: hidden; border-radius: 999px; background: #e7ece7; }
+.progress-track span { display: block; width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #5ea844, #c7e53b); transition: width .45s ease; }
+
+.game-layout { display: grid; grid-template-columns: 15rem minmax(0, 1fr) 10.5rem; align-items: stretch; gap: .45rem; height: calc(100% - 4.65rem); }
+.board-wrap { height: 100%; overflow: hidden; border-radius: 1.1rem; box-shadow: var(--shadow); }
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  grid-template-rows: repeat(9, minmax(0, 1fr));
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: .35rem;
+  gap: .25rem;
+  background: var(--forest);
+}
+
+.board-space {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+  overflow: hidden;
+  padding: .48rem .5rem;
+  border: 0;
+  border-radius: .7rem;
+  color: var(--ink);
+  background: var(--space-color, #fff);
+  text-align: left;
+  cursor: pointer;
+  transition: transform .18s ease, filter .18s ease, box-shadow .18s ease;
+}
+
+.board-space::before { content: ""; position: absolute; inset: 0 0 auto; height: .34rem; background: var(--category-color, #d7e1db); }
+.board-space:hover, .board-space:focus-visible { z-index: 3; transform: translateY(-3px) scale(1.035); outline: 3px solid white; box-shadow: 0 8px 18px rgba(0,0,0,.2); }
+.board-space.current { z-index: 4; outline: 3px solid var(--gold); box-shadow: 0 0 0 5px rgba(255,202,87,.34); }
+.board-space.done { background: #f1fbdc; }
+.board-space.done::after { content: "✓"; position: absolute; right: .36rem; top: .4rem; display: grid; place-items: center; width: 1.18rem; height: 1.18rem; border-radius: 50%; color: white; background: #318456; font-size: .73rem; font-weight: 900; }
+.space-number { color: rgba(22,53,46,.58); font-size: .68rem; font-weight: 850; }
+.space-name { display: -webkit-box; overflow: hidden; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.18; font-size: clamp(.68rem, .8vw, .81rem); font-weight: 900; letter-spacing: -.04em; }
+.space-product { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: rgba(22,53,46,.68); font-size: .64rem; }
+.space-start, .space-quiz { align-items: center; justify-content: center; text-align: center; color: white; background: linear-gradient(145deg, #285f4c, #123f35); }
+.space-start::before, .space-quiz::before { display: none; }
+.space-start strong, .space-quiz strong { font-size: 1.02rem; }
+.space-start small, .space-quiz small { margin-top: .25rem; color: #d8f65a; font-weight: 700; }
+
+.token {
+  position: absolute;
+  right: .26rem;
+  bottom: .24rem;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 3px solid white;
+  border-radius: 50% 50% 50% .3rem;
+  color: #123f35;
+  background: var(--gold);
+  font-size: .88rem;
+  font-weight: 950;
+  box-shadow: 0 5px 9px rgba(0,0,0,.25);
+  animation: tokenPop .28s ease both;
+}
+
+@keyframes tokenPop { from { transform: translateY(-8px) scale(.7); opacity: .25; } to { transform: none; opacity: 1; } }
+
+.map-stage {
+  grid-row: 2 / 9;
+  grid-column: 2 / 9;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
+  border: 4px solid #e9f0e8;
+  border-radius: 1rem;
+  background: #dfeee5;
+}
+
+.map-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .75rem .9rem;
+  border-bottom: 1px solid #d5e2da;
+  background: rgba(255,255,255,.96);
+}
+
+.map-heading h2 { margin: .08rem 0 0; font-size: 1.05rem; letter-spacing: -.035em; }
+.eyebrow { color: #458060; font-size: .67rem; font-weight: 900; letter-spacing: .13em; }
+.map-button { min-height: 2.15rem; padding: .42rem .65rem; font-size: .76rem; }
+#map { position: relative; min-height: 0; isolation: isolate; background: #d7eadf; }
+.map-fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  padding: 0;
+  overflow: hidden;
+  background:
+    linear-gradient(25deg, transparent 47%, rgba(255,255,255,.65) 48%, rgba(255,255,255,.65) 51%, transparent 52%),
+    linear-gradient(-32deg, transparent 47%, rgba(255,255,255,.55) 48%, rgba(255,255,255,.55) 51%, transparent 52%),
+    #d6eadf;
+  background-size: 7rem 7rem, 8rem 8rem, auto;
+  color: #315d4d;
+  text-align: center;
+}
+.offline-map-art { position: absolute; inset: 0; width: 100%; height: 100%; }
+.offline-map-label { position: absolute; z-index: 2; padding: .25rem .48rem; border-radius: 999px; color: #41675a; background: rgba(255,255,255,.78); font-size: .63rem; font-weight: 850; box-shadow: 0 2px 8px rgba(18,63,53,.1); pointer-events: none; }
+.offline-business-marker { position: absolute; z-index: 4; display: grid; place-items: center; width: 1.7rem; height: 1.7rem; padding: 0; transform: translate(-50%, -50%) rotate(-45deg); border: 3px solid white; border-radius: 50% 50% 50% .25rem; color: white; background: var(--marker-color); font-size: .65rem; font-weight: 900; cursor: pointer; box-shadow: 0 4px 9px rgba(0,0,0,.28); transition: transform .15s ease, z-index .15s ease; }
+.offline-business-marker span { transform: rotate(45deg); }
+.offline-business-marker:hover, .offline-business-marker:focus-visible { z-index: 8; transform: translate(-50%, -50%) rotate(-45deg) scale(1.3); outline: 2px solid var(--gold); }
+.offline-business-marker.map-focused { z-index: 9; transform: translate(-50%, -50%) rotate(-45deg) scale(1.65); outline: 3px solid var(--gold); box-shadow: 0 0 0 8px rgba(255,202,87,.32), 0 8px 20px rgba(0,0,0,.3); }
+.offline-map-caption { position: absolute; z-index: 3; right: .6rem; bottom: .45rem; margin: 0; padding: .28rem .45rem; border-radius: .4rem; color: #547066; background: rgba(255,255,255,.82); font-size: .58rem; }
+
+.turn-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: .85rem;
+  padding: .78rem .9rem;
+  border-top: 1px solid #d4e1d9;
+  background: rgba(255,255,255,.97);
+}
+.turn-copy small { display: block; color: var(--muted); font-size: .72rem; }
+.turn-copy strong { display: block; margin-top: .1rem; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: .92rem; }
+.dice { display: grid; place-items: center; width: 3rem; height: 3rem; border: 2px solid #d7e0da; border-radius: .72rem; background: #f8faf7; font-size: 2.15rem; line-height: 1; box-shadow: inset 0 -3px 0 rgba(18,63,53,.05); }
+.dice.rolling { animation: diceRoll .22s linear infinite; }
+@keyframes diceRoll { 50% { transform: rotate(8deg) scale(1.08); } }
+.roll-button { min-height: 3rem; padding: .75rem 1.2rem; border: 0; border-radius: .78rem; color: #123f35; background: var(--lime); font-weight: 900; cursor: pointer; box-shadow: 0 6px 0 #aac52f; transition: transform .12s ease, box-shadow .12s ease; }
+.roll-button:hover { filter: brightness(1.03); }
+.roll-button:active { transform: translateY(4px); box-shadow: 0 2px 0 #aac52f; }
+.roll-button:disabled { cursor: wait; filter: grayscale(.5); opacity: .65; }
+.map-note { position: absolute; z-index: 500; top: 4rem; left: 50%; width: max-content; max-width: calc(100% - 2rem); margin: 0; padding: .42rem .65rem; transform: translateX(-50%); border-radius: 999px; color: #50645b; background: rgba(255,255,255,.88); font-size: .64rem; text-align: center; box-shadow: 0 4px 15px rgba(20,50,40,.12); pointer-events: none; }
+
+.learn-panel { display: grid; grid-template-rows: minmax(0, 1fr); gap: .55rem; height: 100%; min-height: 0; overflow: hidden; }
+.how-card, .recent-card, .legend-card, .synergy-card { padding: .75rem; border: 1px solid rgba(18,63,53,.08); border-radius: .9rem; background: rgba(255,255,255,.9); box-shadow: 0 8px 20px rgba(18,63,53,.06); }
+.how-card, .legend-card { display: none; }
+.recent-card, .synergy-card { min-height: 0; overflow: hidden; }
+.how-card h2, .panel-title h2, .legend-card h2, .synergy-card h2 { margin: .24rem 0 .85rem; font-size: 1.05rem; letter-spacing: -.04em; }
+.how-card ol { display: grid; gap: .78rem; margin: 0; padding: 0; list-style: none; }
+.how-card li { display: grid; grid-template-columns: 1.8rem 1fr; align-items: start; gap: .65rem; color: #40564d; font-size: .86rem; line-height: 1.5; }
+.how-card li span { display: grid; place-items: center; width: 1.8rem; height: 1.8rem; border-radius: .55rem; color: #123f35; background: #eaf5bc; font-weight: 900; }
+.panel-title { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
+.panel-title h2 { margin: 0; }
+.panel-title > span { color: var(--muted); font-size: .76rem; }
+.recent-list { display: grid; gap: .55rem; margin-top: .75rem; }
+.recent-item { display: grid; grid-template-columns: .7rem 1fr auto; align-items: center; gap: .55rem; padding: .65rem; border-radius: .72rem; background: #f5f8f4; }
+.recent-dot { width: .7rem; height: .7rem; border-radius: 50%; background: var(--dot); }
+.recent-item strong { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: .8rem; }
+.recent-item small { color: var(--muted); font-size: .69rem; }
+.recent-item em { color: #377456; font-size: .7rem; font-style: normal; font-weight: 850; }
+.empty-copy { margin: 1.1rem 0 .4rem; color: #819088; font-size: .8rem; line-height: 1.55; text-align: center; }
+.legend { display: grid; grid-template-columns: 1fr 1fr; gap: .55rem; }
+.legend-item { display: flex; align-items: center; gap: .4rem; color: #53645d; font-size: .72rem; }
+.legend-item i { width: .65rem; height: .65rem; border-radius: .22rem; background: var(--legend-color); }
+.synergy-panel-left { display: flex; flex-direction: column; height: 100%; padding: .7rem; }
+.synergy-guide { margin: -.2rem 0 .45rem; color: var(--muted); font-size: .68rem; line-height: 1.4; }
+.synergy-list { display: grid; gap: .4rem; min-height: 0; margin-top: .2rem; padding-right: .25rem; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+.synergy-item { padding: .68rem; border: 1px solid #dfe7e1; border-radius: .75rem; background: #f7f9f6; }
+.synergy-item.unlocked { border-color: #b9d56a; background: linear-gradient(135deg, #f5fbdc, #fff9df); }
+.synergy-item strong { display: block; font-size: .78rem; line-height: 1.35; }
+.synergy-item p { margin: .28rem 0; color: #5d6e66; font-size: .68rem; line-height: 1.35; }
+.synergy-item small { display: block; color: #77877f; font-size: .64rem; }
+.synergy-value { display: inline-block; margin-top: .35rem; padding: .22rem .4rem; border-radius: 999px; color: #275c45; background: #dff19d; font-size: .65rem; font-weight: 900; }
+.synergy-progress { height: .3rem; margin-top: .42rem; overflow: hidden; border-radius: 999px; background: #e2e8e3; }
+.synergy-progress i { display: block; height: 100%; background: #9dc63f; }
+.synergy-unlock { margin: .8rem 0 0; padding: .85rem; border: 1px solid #c9dc83; border-radius: .8rem; background: #f6fbdc; }
+.synergy-unlock strong { display: block; color: #315c38; }
+.synergy-unlock p { margin: .25rem 0 0; color: #526556; font-size: .8rem; line-height: 1.45; }
+.support-draw { display: grid; place-items: center; min-height: 17rem; padding: 1rem; border: 2px dashed #e0b33b; border-radius: 1rem; background: radial-gradient(circle, #fffbe8, #fff3bd); text-align: center; }
+.support-machine { display: grid; place-items: center; width: 7rem; height: 7rem; border: 6px solid white; border-radius: 50%; background: linear-gradient(145deg, #ffd85e, #f2a91c); font-size: 3.5rem; box-shadow: 0 12px 25px rgba(154,104,10,.22); }
+.support-machine.drawing { animation: supportSpin .18s linear infinite; }
+@keyframes supportSpin { 50% { transform: rotate(8deg) scale(1.06); } }
+.support-result { padding: 1rem; border: 2px solid #e8c457; border-radius: 1rem; background: #fff9dc; text-align: center; }
+.support-result .support-icon { display: block; font-size: 3.4rem; }
+.support-result h3 { margin: .35rem 0; color: #72520a; font-size: 1.25rem; }
+.support-result p { margin: .35rem 0; color: #665b3d; line-height: 1.55; }
+.support-target { margin-top: .8rem; padding: .8rem; border-radius: .75rem; color: #214d3d; background: white; font-weight: 850; }
+.mobile-track-section { display: none; margin-top: 1rem; padding: 1rem; border-radius: 1.2rem; background: white; }
+
+dialog { border: 0; padding: 0; background: transparent; }
+dialog::backdrop { background: rgba(8,26,22,.64); backdrop-filter: blur(5px); }
+.company-dialog { width: min(720px, calc(100% - 1.4rem)); max-height: min(88vh, 820px); border-radius: 1.35rem; box-shadow: 0 28px 80px rgba(0,0,0,.32); }
+.minigame-dialog { width: min(1180px, calc(100% - 1rem)); height: min(94dvh, 900px); border-radius: 1.1rem; box-shadow: 0 28px 90px rgba(0,0,0,.4); }
+.minigame-shell { display: grid; grid-template-rows: auto minmax(0, 1fr); height: 100%; overflow: hidden; border-radius: 1.1rem; background: white; }
+.minigame-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .55rem .7rem; color: white; background: var(--forest); }
+.minigame-bar strong { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: .9rem; }
+.minigame-bar span { margin-left: auto; color: #d8f65a; font-size: .76rem; font-weight: 850; }
+.minigame-close { min-height: 2.2rem; padding: .4rem .7rem; border: 1px solid rgba(255,255,255,.3); border-radius: .6rem; color: white; background: rgba(255,255,255,.1); font-weight: 850; cursor: pointer; }
+.minigame-frame { width: 100%; height: 100%; border: 0; background: #f7f9f1; }
+.dialog-shell { position: relative; overflow: auto; max-height: min(88vh, 820px); border-radius: 1.35rem; background: white; }
+.dialog-close { position: sticky; float: right; z-index: 5; top: .8rem; right: .8rem; display: grid; place-items: center; width: 2.5rem; height: 2.5rem; margin: .8rem .8rem -3.3rem 0; border: 1px solid #d9e3dc; border-radius: 50%; background: rgba(255,255,255,.94); font-size: 1.45rem; cursor: pointer; }
+.company-hero { padding: 1.45rem 4.2rem 1.25rem 1.45rem; color: #16372f; background: color-mix(in srgb, var(--company-color) 25%, white); border-bottom: 5px solid var(--company-color); }
+.company-hero .company-index { display: inline-block; margin-bottom: .7rem; padding: .3rem .5rem; border-radius: .45rem; color: white; background: var(--company-color); font-size: .72rem; font-weight: 900; }
+.company-hero h2 { margin: 0; font-size: clamp(1.45rem, 4vw, 2rem); letter-spacing: -.05em; }
+.company-hero p { margin: .35rem 0 0; color: #445b53; }
+.company-body { padding: 1.25rem 1.45rem 1.5rem; }
+.value-chips { display: flex; flex-wrap: wrap; gap: .45rem; margin-bottom: 1rem; }
+.value-chip { padding: .35rem .55rem; border-radius: 999px; color: #315247; background: #eff5ef; font-size: .75rem; font-weight: 750; }
+.company-section { margin-top: 1.15rem; }
+.company-section h3 { margin: 0 0 .45rem; font-size: .92rem; }
+.company-section p { margin: 0; color: #465b53; font-size: .9rem; line-height: 1.7; }
+.product-box { padding: .9rem; border-left: 5px solid var(--company-color); border-radius: .6rem; background: #f5f8f5; }
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; margin-top: 1rem; }
+.info-grid div { padding: .75rem; border: 1px solid #e1e8e3; border-radius: .7rem; }
+.info-grid small { display: block; margin-bottom: .18rem; color: var(--muted); font-size: .7rem; }
+.info-grid strong { font-size: .8rem; line-height: 1.4; }
+.dialog-actions { display: flex; justify-content: flex-end; gap: .65rem; margin-top: 1.25rem; }
+.primary-button, .secondary-button, .danger-button { min-height: 2.8rem; padding: .7rem 1rem; border-radius: .72rem; font-weight: 850; cursor: pointer; }
+.primary-button { border: 0; color: white; background: var(--forest); }
+.secondary-button { border: 1px solid #d8e1da; background: white; }
+.danger-button { border: 0; color: white; background: #a64242; }
+.mission-head { display: flex; align-items: center; gap: .8rem; margin-bottom: 1rem; }
+.mission-icon { display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: .9rem; background: color-mix(in srgb, var(--company-color) 25%, white); font-size: 1.45rem; }
+.mission-head h3 { margin: 0; font-size: 1.08rem; }
+.mission-head p { margin: .16rem 0 0; color: var(--muted); font-size: .78rem; }
+.mission-question { margin: 0 0 .9rem; font-size: 1rem; font-weight: 850; line-height: 1.55; }
+.choice-list { display: grid; gap: .6rem; }
+.choice-button { display: grid; grid-template-columns: 1.7rem 1fr; align-items: center; gap: .6rem; width: 100%; padding: .8rem; border: 1px solid #dbe4de; border-radius: .75rem; background: white; text-align: left; cursor: pointer; }
+.choice-button:hover, .choice-button:focus-visible { border-color: var(--company-color); background: #f7faf7; }
+.choice-button span { display: grid; place-items: center; width: 1.7rem; height: 1.7rem; border-radius: .5rem; background: #edf2ee; font-size: .76rem; font-weight: 900; }
+.choice-button.correct { border-color: #3b9561; background: #ecf8ef; }
+.choice-button.wrong { border-color: #c95c5c; background: #fff1f1; }
+.feedback-box { margin-top: .9rem; padding: .9rem; border-radius: .75rem; background: #eef7ea; }
+.feedback-box strong { display: block; margin-bottom: .25rem; }
+.feedback-box p { margin: 0; color: #466052; font-size: .86rem; line-height: 1.55; }
+.reward-card { padding: 1.25rem; border: 2px solid #d7e7a0; border-radius: 1rem; background: linear-gradient(145deg, #f8ffe5, #edf6c6); text-align: center; }
+.reward-card .reward-icon { display: block; font-size: 2.3rem; }
+.reward-card h3 { margin: .55rem 0 .35rem; font-size: 1.3rem; }
+.reward-card p { margin: 0; color: #49604f; line-height: 1.55; }
+.reward-score { display: inline-block; margin-top: .8rem; padding: .45rem .7rem; border-radius: 999px; color: #204e39; background: white; font-weight: 900; }
+.guide-source { display: inline-flex; margin-top: .85rem; color: #316a54; font-size: .78rem; font-weight: 800; }
+
+.confirm-dialog { width: min(420px, calc(100% - 2rem)); border-radius: 1rem; background: white; box-shadow: 0 22px 60px rgba(0,0,0,.28); }
+.confirm-dialog form { padding: 1.35rem; }
+.confirm-dialog h2 { margin: 0 0 .55rem; font-size: 1.1rem; }
+.confirm-dialog p { margin: 0; color: var(--muted); line-height: 1.55; }
+.toast { position: fixed; z-index: 2000; left: 50%; bottom: 1.3rem; max-width: calc(100% - 2rem); padding: .75rem 1rem; transform: translate(-50%, 2rem); border-radius: 999px; color: white; background: #123f35; font-weight: 750; opacity: 0; pointer-events: none; transition: .25s ease; box-shadow: 0 10px 28px rgba(0,0,0,.24); }
+.toast.show { transform: translate(-50%, 0); opacity: 1; }
+
+@media (max-width: 1180px) {
+  .game-layout { grid-template-columns: 1fr; }
+  .learn-panel { grid-template-columns: repeat(3, 1fr); }
+  .board { min-height: 610px; }
+}
+
+@media (max-width: 800px) {
+  .topbar { align-items: flex-start; }
+  .brand-block p { display: none; }
+  .brand-mark { width: 3.7rem; height: 2.8rem; }
+  .guide-button { display: none; }
+  .quiet-button { min-height: 2.5rem; padding: .55rem .7rem; }
+  .progress-strip { grid-template-columns: 1fr auto; gap: .8rem; }
+  .progress-track-wrap { grid-row: 2; grid-column: 1 / -1; }
+  .game-layout { display: block; }
+  .board-wrap { overflow: visible; box-shadow: none; }
+  .board { display: block; aspect-ratio: auto; min-height: 0; padding: 0; background: transparent; }
+  .board-space { display: none; }
+  .map-stage { display: grid; grid-template-rows: auto 48vh auto; min-height: 34rem; border: 1px solid #d4e1d9; border-radius: 1.15rem; box-shadow: var(--shadow); }
+  .map-note { top: 4.25rem; font-size: .61rem; }
+  .turn-panel { grid-template-columns: minmax(0, 1fr) auto; gap: .6rem; }
+  .turn-copy { grid-column: 1 / 2; }
+  .dice { grid-column: 2; grid-row: 1 / 3; }
+  .roll-button { grid-column: 1; width: 100%; }
+  .learn-panel { display: grid; grid-template-columns: 1fr; margin-top: 1rem; }
+  .how-card, .legend-card { display: none; }
+  .mobile-track-section { display: block; }
+  .mobile-track { display: flex; gap: .65rem; overflow-x: auto; margin: .8rem -1rem -1rem; padding: 0 1rem 1rem; scroll-snap-type: x mandatory; scrollbar-width: thin; }
+  .mobile-space { position: relative; flex: 0 0 9.8rem; min-height: 6.6rem; padding: .82rem; border: 1px solid #dce5df; border-top: .4rem solid var(--category-color); border-radius: .85rem; background: #f9fbf8; text-align: left; scroll-snap-align: center; }
+  .mobile-space.current { outline: 3px solid var(--gold); }
+  .mobile-space.done { background: #f2f9de; }
+  .mobile-space small { color: var(--muted); font-size: .68rem; }
+  .mobile-space strong { display: block; margin: .3rem 0 .2rem; font-size: .84rem; line-height: 1.25; }
+  .mobile-space span { display: block; color: #687a71; font-size: .7rem; }
+}
+
+@media (max-width: 520px) {
+  .topbar { padding-top: .75rem; }
+  .brand-block { gap: .65rem; }
+  .brand-block h1 { font-size: 1rem; }
+  .brand-mark { width: 3.2rem; height: 2.5rem; border-radius: .8rem .8rem .8rem .15rem; font-size: .86rem; }
+  .app-shell { padding-inline: .75rem; }
+  .progress-strip { padding: .7rem; }
+  .score-card strong { font-size: 1.05rem; }
+  .map-heading { padding: .68rem .72rem; }
+  .map-heading h2 { font-size: .94rem; }
+  .map-stage { grid-template-rows: auto 42vh auto; min-height: 31rem; }
+  .company-hero, .company-body { padding-left: 1rem; padding-right: 1rem; }
+  .company-hero { padding-right: 3.8rem; }
+  .info-grid { grid-template-columns: 1fr; }
+  .dialog-actions { flex-direction: column-reverse; }
+  .dialog-actions > * { width: 100%; }
+}
+
+@media (max-width: 1180px) {
+  .game-layout { display: grid; grid-template-columns: 12rem minmax(0, 1fr) 9.5rem; height: calc(100% - 4.65rem); }
+  .learn-panel { display: grid; grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr); margin-top: 0; }
+  .board-wrap { height: 100%; overflow: hidden; box-shadow: var(--shadow); }
+  .board { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); grid-template-rows: repeat(9, minmax(0, 1fr)); width: 100%; height: 100%; min-height: 0; padding: .35rem; gap: .25rem; background: var(--forest); }
+  .board-space { display: flex; }
+  .map-stage { grid-row: 2 / 9; grid-column: 2 / 9; grid-template-rows: auto minmax(0, 1fr) auto; min-height: 0; border: 4px solid #e9f0e8; border-radius: 1rem; box-shadow: none; }
+  .mobile-track-section { display: none; }
+}
+
+@media (max-width: 700px) {
+  .topbar { min-height: 3.5rem; padding: .4rem .6rem; }
+  .brand-block p, .top-actions { display: none; }
+  .app-shell { height: calc(100dvh - 3.5rem); padding: 0 .45rem .45rem; }
+  .progress-strip { gap: .45rem; padding: .4rem .5rem; }
+  .game-layout { grid-template-columns: 11rem minmax(0, 1fr); height: calc(100% - 4.2rem); }
+  .learn-panel { display: none; }
+  .synergy-panel-left { display: flex; padding: .55rem; }
+  .synergy-panel-left .eyebrow, .synergy-guide { display: none; }
+  .space-product { display: none; }
+  .board-space { padding: .22rem; }
+  .space-name { font-size: clamp(.5rem, 1.65vw, .68rem); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+</style>
+</head>
+<body>
+  <section class="start-screen" id="startScreen" aria-labelledby="startTitle">
+    <div class="start-card">
+      <div class="start-logo">가치<span>ON</span></div>
+      <h1 id="startTitle">영주 사회적기업체험 지도</h1>
+      <p>지도를 따라 영주의 사회적기업을 체험하고<br>기업 간 협업 사회적가치를 수집해 보세요.</p>
+      <button class="game-start-button" id="gameStartButton" type="button">체험 시작</button>
+    </div>
+  </section>
+  <a class="skip-link" href="#gameBoard">기업체험 지도로 바로가기</a>
+  <header class="topbar">
+    <div class="brand-block">
+      <span class="brand-mark" aria-hidden="true">가치<span>ON</span></span>
+      <div>
+        <h1>영주 사회적기업체험 지도</h1>
+        <p>기업 위치를 찾아보고 사회적가치를 체험해 보세요.</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <span class="guide-button">상품안내서 30개 기업 반영</span>
+      <button class="quiet-button" id="resetButton" type="button">처음부터</button>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <section class="progress-strip" aria-label="탐험 현황">
+      <div class="synergy-summary-card">
+        <span class="level-icon" aria-hidden="true">🤝</span>
+        <span><small>협업 사회적가치</small><strong><span id="synergyTopCount">0</span> / 30 수집</strong></span>
+      </div>
+      <div class="progress-track-wrap">
+        <div class="progress-copy"><span>기업 체험</span><strong><span id="completedCount">0</span> / 30</strong></div>
+        <div class="progress-track" aria-hidden="true"><span id="progressBar"></span></div>
+      </div>
+      <div class="score-card"><small>모은 가치</small><strong><span id="valueScore">0</span>점</strong></div>
+    </section>
+
+    <section class="game-layout">
+      <aside class="synergy-card synergy-panel-left" aria-label="협업 사회적가치 전체 목록">
+        <span class="eyebrow">COLLABORATION SYNERGY</span>
+        <div class="panel-title"><h2>협업 사회적가치</h2><span id="synergyCount">0 / 30</span></div>
+        <p class="synergy-guide">연결된 기업 체험을 완료하면 사회적가치가 수집됩니다.</p>
+        <div id="synergyList" class="synergy-list"></div>
+      </aside>
+      <div class="board-wrap" id="gameBoard" tabindex="-1">
+        <div class="board" id="board" aria-label="영주 사회적기업 체험지도">
+          <section class="map-stage">
+            <div class="map-heading">
+              <div>
+                <span class="eyebrow">YEONGJU VALUE MAP</span>
+                <h2>영주시 사회적경제 기업지도</h2>
+              </div>
+              <button id="fitMapButton" class="map-button" type="button">전체 위치</button>
+            </div>
+            <div id="map" aria-label="영주시 사회적경제기업 위치 지도">
+              <div class="map-fallback" id="mapFallback">
+                <strong>영주 기업지도</strong>
+                <p>기업 위치를 눌러 정보를 확인하세요.</p>
+                <span class="fallback-pin pin-north">부석·순흥</span>
+                <span class="fallback-pin pin-west">풍기</span>
+                <span class="fallback-pin pin-center">영주 도심</span>
+                <span class="fallback-pin pin-south">장수·문수</span>
+              </div>
+            </div>
+            <div class="turn-panel">
+              <div class="turn-copy">
+                <small id="turnHint">첫 탐험을 시작해요</small>
+                <strong id="positionLabel">출발점</strong>
+              </div>
+              <div class="dice" id="dice" aria-live="polite" aria-label="기업 탐색 상태">📍</div>
+              <button class="roll-button" id="rollButton" type="button">기업 찾아보기</button>
+            </div>
+            <p class="map-note" id="mapNote">지도 표시는 상품안내서의 주소를 바탕으로 한 교육용 위치 안내입니다.</p>
+          </section>
+        </div>
+      </div>
+
+      <aside class="learn-panel" aria-label="지도 안내와 체험 기록">
+        <section class="how-card">
+          <span class="eyebrow">HOW TO PLAY</span>
+          <h2>한 번에 한 기업씩 알아봐요</h2>
+          <ol>
+            <li><span>1</span>기업 찾아보기를 눌러 다음 위치로 이동해요.</li>
+            <li><span>2</span>도착한 기업의 상품과 사회적가치를 읽어요.</li>
+            <li><span>3</span>연결된 2~3개 기업 체험을 완료해 협업 사회적가치를 모아요.</li>
+          </ol>
+        </section>
+        <section class="recent-card">
+          <div class="panel-title"><h2>최근 발견</h2><span id="discoveredCount">0곳</span></div>
+          <div id="recentList" class="recent-list">
+            <p class="empty-copy">아직 발견한 기업이 없어요.<br>기업 찾아보기를 눌러 보세요!</p>
+          </div>
+        </section>
+        <section class="legend-card">
+          <h2>분야별 기업 위치</h2>
+          <div id="legend" class="legend"></div>
+        </section>
+      </aside>
+    </section>
+
+    <section class="mobile-track-section" aria-label="모바일 기업 위치 목록">
+      <div class="panel-title"><h2>기업 위치 둘러보기</h2><span>옆으로 밀어 보세요</span></div>
+      <div id="mobileTrack" class="mobile-track"></div>
+    </section>
+  </main>
+
+  <dialog id="companyDialog" class="company-dialog" aria-labelledby="dialogTitle">
+    <div class="dialog-shell">
+      <button class="dialog-close" id="closeDialog" type="button" aria-label="기업 정보 닫기">×</button>
+      <div id="dialogContent"></div>
+    </div>
+  </dialog>
+
+  <dialog id="minigameDialog" class="minigame-dialog" aria-labelledby="minigameTitle">
+    <div class="minigame-shell">
+      <div class="minigame-bar">
+        <strong id="minigameTitle">기업 미니게임 체험</strong>
+        <span id="minigameStatus">체험 진행 중</span>
+        <button class="minigame-close" id="minigameClose" type="button">지도로 돌아가기</button>
+      </div>
+      <iframe class="minigame-frame" id="minigameFrame" title="기업 미니게임" src="about:blank" allow="autoplay"></iframe>
+    </div>
+  </dialog>
+
+  <dialog id="confirmDialog" class="confirm-dialog" aria-labelledby="confirmTitle">
+    <form method="dialog">
+      <h2 id="confirmTitle">탐험 기록을 초기화할까요?</h2>
+      <p>모은 가치점수, 기업 체험, 협업 사회적가치가 모두 지워집니다.</p>
+      <div class="dialog-actions">
+        <button value="cancel" class="secondary-button">취소</button>
+        <button value="confirm" class="danger-button">초기화</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script>
+const CATEGORY_META = {
+  food: { label: "식품", color: "#79bb41", icon: "🥗" },
+  education: { label: "교육·체험·복지", color: "#71c0c8", icon: "🧩" },
+  clothes: { label: "의류", color: "#9972c7", icon: "🧵" },
+  cleaning: { label: "청소·방역", color: "#718195", icon: "🧹" },
+  manufacturing: { label: "제조·판매", color: "#4d8dc8", icon: "🏗️" },
+  festival: { label: "축제기획", color: "#ef9aad", icon: "🎭" }
+};
+
+const BUSINESSES = [
+  {
+    id: 1, name: "소백로컬푸드 협동조합", short: "소백로컬푸드", category: "food", product: "위탁급식·도시락", page: 10,
+    phone: "054-633-5236", address: "영주시 가흥로357번길 25", lat: 36.807, lng: 128.606,
+    description: "지역에서 생산한 농산물과 사회적경제 영역의 원재료로 안전한 도시락을 만듭니다. 지역농가의 소득을 높이고 고령자·퇴직자 등에게 일자리 참여 기회를 제공해 지역경제의 선순환을 돕습니다.",
+    values: ["지역농산물", "취약계층 일자리", "안전한 먹거리"],
+    mission: { q: "단체 도시락의 사회적가치를 가장 크게 높이는 재료 선택은 무엇일까요?", options: ["가격만 가장 싼 수입 농산물", "영주 농가와 사회적경제기업의 원재료", "이름을 알 수 없는 재고 식재료"], answer: 1, learning: "지역 원재료를 사용하면 도시락의 품질을 지키면서 지역농가의 소득과 일자리가 함께 순환합니다." }
+  },
+  {
+    id: 2, name: "농업회사법인 소백산한돈포크 주식회사", short: "소백산한돈포크", category: "food", product: "한돈·돈육가공", page: 12,
+    phone: "054-634-6331", address: "영주시 한정로 58-1", lat: 36.820, lng: 128.642,
+    description: "농장 직영 계약과 도축·가공·판매를 연결해 유통구조를 개선하고 질 좋은 한돈을 합리적인 가격에 제공합니다. 창출한 이익으로 장애인복지관과 어려운 이웃을 도우며 지역사회와 함께 성장합니다.",
+    values: ["유통구조 개선", "지역사회 환원", "좋은 먹거리"],
+    mission: { q: "생산자와 소비자 모두에게 도움이 되는 유통 방식은 무엇일까요?", options: ["유통 단계를 불필요하게 늘린다", "원산지 정보를 숨긴다", "농장 직영 계약으로 유통 단계를 줄인다"], answer: 2, learning: "유통 단계를 줄이면 생산 과정을 더 잘 확인하고 합리적인 가격으로 품질 좋은 먹거리를 제공할 수 있습니다." }
+  },
+  {
+    id: 3, name: "주식회사 소백지엔에프", short: "소백지엔에프", category: "food", product: "키즈홍삼", page: 14,
+    phone: "070-7638-5762", address: "영주시 선비로261번길 14, 2층 1호", lat: 36.824, lng: 128.616,
+    description: "식품 알레르기가 있는 아이들도 건강하게 먹을 수 있는 제품을 고민한 아빠의 마음에서 출발했습니다. 홍삼과 지역 농산물을 활용한 건강식품을 개발하며 지역사회와 환경문제도 함께 살핍니다.",
+    values: ["아동 건강", "제품 혁신", "지역 농산물"],
+    mission: { q: "어린이 건강식품을 개발할 때 가장 먼저 확인할 것은 무엇일까요?", options: ["포장 크기만 크게 만들기", "원재료와 알레르기 정보를 꼼꼼히 확인하기", "유행하는 색만 고르기"], answer: 1, learning: "어린이를 위한 제품은 원재료의 안전성과 알레르기 정보가 특히 중요합니다." }
+  },
+  {
+    id: 4, name: "농업회사법인 승혜축산유통 주식회사", short: "승혜축산", category: "food", product: "영주 한우", page: 16,
+    phone: "054-637-3245", address: "영주시 적서로261번길 5", lat: 36.788, lng: 128.626,
+    description: "지역농가와 계약을 맺어 한우를 공급하고 청년과 고령층 등 사회적 사각지대에 놓인 주민에게 좋은 일자리를 제공합니다. 지역 주민과 더불어 살아가는 상생을 실천합니다.",
+    values: ["지역농가 계약", "청년 일자리", "고령층 일자리"],
+    mission: { q: "지역과 상생하는 한우 선물세트의 조건으로 가장 알맞은 것은?", options: ["지역농가 계약과 고용 가치를 함께 알린다", "생산지를 표시하지 않는다", "포장만 화려하게 만든다"], answer: 0, learning: "제품에 담긴 지역농가와 일자리의 이야기를 함께 알리면 소비자가 가치 있는 선택을 할 수 있습니다." }
+  },
+  {
+    id: 5, name: "주식회사 어울림", short: "어울림", category: "food", product: "홍삼스틱", page: 18,
+    phone: "054-636-9782", address: "영주시 봉현면 신재로 887-6 C동", lat: 36.887, lng: 128.540,
+    description: "영농조합원이 직접 재배·가공한 원료로 홍삼제품을 만들고 지역특산물인 홍삼과 인견의 홍보에 힘씁니다. 취약계층 일자리 창출과 철저한 품질검사로 건강과 신뢰를 함께 지킵니다.",
+    values: ["취약계층 고용", "지역특산물", "품질 신뢰"],
+    mission: { q: "홍삼 제품에 대한 소비자의 신뢰를 높이는 행동은 무엇일까요?", options: ["검사 결과를 생략한다", "원료와 품질검사 과정을 투명하게 알린다", "효과를 과장해서 광고한다"], answer: 1, learning: "원료의 출처와 품질관리 과정을 투명하게 공개하는 것이 신뢰받는 제품의 출발점입니다." }
+  },
+  {
+    id: 6, name: "농업회사법인 주식회사 올곧이", short: "올곧이", category: "food", product: "홍삼엑기스·홍삼차", page: 20,
+    phone: "010-3548-5086", address: "영주시 순흥면 소백로 2796", lat: 36.914, lng: 128.584,
+    description: "‘풍기애삼’ 브랜드로 홍삼엑기스·절편·블렌딩 차를 선보입니다. 고령 인삼농가에서 인삼을 수매하고 상품성이 낮은 지역 사과도 활용해 농가와 상생하는 로컬 브랜드를 만듭니다.",
+    values: ["고령농가 상생", "못난이 농산물", "로컬브랜드"],
+    mission: { q: "모양이 고르지 않은 영주 사과를 가치 있게 쓰는 방법은?", options: ["전부 버린다", "지역 밖으로 숨겨 보낸다", "사과홍삼차 같은 새 제품으로 개발한다"], answer: 2, learning: "상품성이 낮은 농산물도 가공 아이디어를 더하면 폐기물을 줄이고 농가 소득을 높이는 자원이 됩니다." }
+  },
+  {
+    id: 7, name: "주식회사 인잇", short: "인잇", category: "food", product: "단체급식·도시락", page: 22,
+    phone: "054-631-1634", address: "영주시 대학로201번길 8-24", lat: 36.807, lng: 128.610,
+    description: "요양시설·공공기관·기업에 단체급식과 도시락을 제공하며 지역 농산물을 구매합니다. 고령자 등 취약계층에게 일자리를 제공하고 사회적 약자에게 봉사하며 선순환 경제에 참여합니다.",
+    values: ["돌봄 급식", "지역농산물", "고령자 고용"],
+    mission: { q: "어르신을 위한 급식을 계획할 때 가장 필요한 배려는 무엇일까요?", options: ["먹기 쉬운 형태와 영양을 함께 고려한다", "모든 메뉴를 아주 딱딱하게 만든다", "가격만 보고 같은 반찬만 제공한다"], answer: 0, learning: "돌봄 급식은 이용자의 건강과 씹기·삼키기 편한 정도까지 고려해야 하는 사회서비스입니다." }
+  },
+  {
+    id: 8, name: "팜스브릿지 주식회사 구구리제빵소", short: "팜스브릿지", category: "food", product: "우리쌀 빵", page: 24,
+    phone: "054-637-1679", address: "영주시 대학로62번길 32", lat: 36.812, lng: 128.609,
+    description: "영주의 농산물과 쌀을 사용해 농업인과 소비자를 연결합니다. 우리쌀 소비를 늘리기 위해 쌀빵 전문점을 운영하고 건강한 빵에 대한 교육도 진행합니다.",
+    values: ["우리쌀 소비", "농업인 연결", "먹거리 교육"],
+    mission: { q: "우리쌀 소비를 늘리는 빵집의 실천으로 알맞은 것은?", options: ["쌀 원산지를 숨긴다", "지역 쌀로 다양한 빵을 만들고 소비자에게 알린다", "밀가루 제품만 판매한다"], answer: 1, learning: "지역 쌀을 활용한 다양한 제품과 교육은 농업인과 소비자를 연결하고 우리쌀 소비를 늘립니다." }
+  },
+  {
+    id: 9, name: "흙사랑 영농조합법인", short: "흙사랑", category: "food", product: "순수차·농산물 가공", page: 26,
+    phone: "054-637-1679", address: "영주시 장수면 장안로 320", lat: 36.774, lng: 128.578,
+    description: "자연 그대로의 농산물을 정직하게 가공해 순수차·생강차·분말·삼계탕 재료 등을 만듭니다. 신뢰와 정직, 친절을 우선하며 시골의 따뜻한 정까지 담는 기업을 지향합니다.",
+    values: ["정직한 생산", "농산물 가공", "지역의 정"],
+    mission: { q: "정직한 농산물 가공기업의 표시 방법은 무엇일까요?", options: ["원재료와 중량을 정확히 알린다", "내용물을 실제보다 많게 표시한다", "유통기한을 지운다"], answer: 0, learning: "원재료·중량·보관법을 정확히 알리는 것은 생산자와 소비자 사이의 신뢰를 만드는 기본입니다." }
+  },
+  {
+    id: 10, name: "꿈꾸는목공학교 사회적협동조합", short: "꿈꾸는목공학교", category: "education", product: "목공·숲 체험", page: 30,
+    phone: "054-634-7760", address: "영주시 문수로1406번길 15-40", lat: 36.770, lng: 128.628,
+    description: "숲체험과 목공체험교육으로 지역사회와 산림문화 발전에 기여합니다. 어린이와 청소년이 몸과 마음을 건강하게 키울 수 있도록 학교·기관·일반인을 위한 목공체험 기회를 제공합니다.",
+    values: ["산림문화", "청소년 교육", "진로체험"],
+    mission: { q: "목공체험을 시작하기 전 가장 먼저 해야 할 일은?", options: ["도구를 바로 휘두른다", "안전수칙과 도구 사용법을 배운다", "보호장비를 치운다"], answer: 1, learning: "체험의 즐거움은 안전에서 시작합니다. 도구의 올바른 사용법을 배우는 과정도 중요한 진로교육입니다." }
+  },
+  {
+    id: 11, name: "늘품 협동조합", short: "늘품", category: "education", product: "방문요양·일상돌봄", page: 32,
+    phone: "054-708-7778", address: "영주시 대학로 77 아트스퀘어 2층", lat: 36.810, lng: 128.611,
+    description: "질병과 고령으로 고독·우울·무기력을 겪는 주민에게 방문요양과 일상돌봄을 제공합니다. 돌봄서비스로 삶의 질을 높이고 지역 취약계층의 일자리도 만듭니다.",
+    values: ["방문요양", "일상돌봄", "돌봄 일자리"],
+    mission: { q: "혼자 병원에 가기 어려운 주민에게 가장 알맞은 서비스는?", options: ["병원 동행서비스", "광고물 제작", "창호 교체"], answer: 0, learning: "일상돌봄의 병원 동행서비스는 돌봄이 필요한 청·중장년의 안전한 진료와 일상 회복을 돕습니다." }
+  },
+  {
+    id: 12, name: "드림앤컬쳐 협동조합", short: "드림앤컬쳐", category: "education", product: "수공예·로컬관광", page: 34,
+    phone: "054-632-3958", address: "영주시 두서길19번길 10", lat: 36.827, lng: 128.617,
+    description: "수공예 작가와 체험강사를 길러 경력단절여성의 일자리를 만들고, 원도심 투어와 숙박 체험을 통해 어르신의 일자리도 넓힙니다. 주민과 함께 지역의 경제·문화적 가치를 높입니다.",
+    values: ["경력단절여성", "어르신 일자리", "원도심 관광"],
+    mission: { q: "원도심 관광 프로그램을 준비할 때 지역 상생에 가장 도움이 되는 구성은?", options: ["지역 해설사와 공예 작가가 함께 참여한다", "지역 이야기는 모두 뺀다", "외부 대형업체만 참여한다"], answer: 0, learning: "지역 주민이 해설·공예·카페 운영에 참여하면 관광 수익과 문화적 가치가 지역 안에서 순환합니다." }
+  },
+  {
+    id: 13, name: "협동조합 모두:다", short: "모두:다", category: "education", product: "천연재료 체험", page: 36,
+    phone: "010-8554-2182", address: "영주시 중앙로 7, 202호", lat: 36.824, lng: 128.622,
+    description: "비품 농산물과 천연재료를 활용한 상품·체험키트를 개발합니다. 자연물감·밀랍크레파스·샌드캔들 등 환경을 생각하는 문화·교육 콘텐츠를 지역사회에 제공합니다.",
+    values: ["비품 농산물 활용", "친환경 재료", "문화교육"],
+    mission: { q: "환경을 생각하는 체험재료 선택은 무엇일까요?", options: ["쓰임이 남은 농산물과 천연재료", "한 번 쓰고 버리는 과대포장", "성분을 알 수 없는 재료"], answer: 0, learning: "버려질 수 있는 농산물과 천연재료를 활용하면 자원 낭비를 줄이고 새로운 체험가치를 만들 수 있습니다." }
+  },
+  {
+    id: 14, name: "주식회사 소백산자락길", short: "소백산자락길", category: "education", product: "자락길 걷기여행", page: 38,
+    phone: "054-633-5636", address: "영주시 광복로 47, 영주문화파출소 2층", lat: 36.829, lng: 128.624,
+    description: "소백산 둘레 143km를 잇는 열두 자락의 길을 운영합니다. 자락마다 다른 자연과 문화의 경계를 천천히 걸으며 지역의 생태·역사·공동체를 발견하는 여행을 제공합니다.",
+    values: ["생태관광", "지역문화", "걷기여행"],
+    mission: { q: "지속가능한 자락길 여행자의 행동으로 알맞은 것은?", options: ["정해진 길을 지키고 쓰레기를 되가져간다", "야생식물을 꺾어 기념품으로 가져간다", "큰 소리로 야생동물을 쫓는다"], answer: 0, learning: "탐방로를 지키고 흔적을 남기지 않는 여행은 자연과 지역의 생활문화를 함께 보호합니다." }
+  },
+  {
+    id: 15, name: "순흥초군농악보존회", short: "순흥초군농악", category: "education", product: "한복대여·전통체험", page: 40,
+    phone: "054-635-2522", address: "영주시 순흥면 읍내리 32", lat: 36.916, lng: 128.575,
+    description: "사라져 가는 순흥 초군농악과 지역의 전통문화를 보존·계승합니다. 농악·짚공예·한지공예·떡메치기 등의 체험 수익으로 일자리와 장학금, 다문화가정 문화체험 등 지역 환원을 실천합니다.",
+    values: ["전통문화 계승", "지역 환원", "다문화 체험"],
+    mission: { q: "전통문화를 오래 이어가기 위한 방법으로 가장 알맞은 것은?", options: ["기록 없이 일부만 남긴다", "지역 주민과 다음 세대가 배우고 체험하게 한다", "공연 기회를 줄인다"], answer: 1, learning: "전통은 보존과 함께 전수·체험이 이루어질 때 다음 세대의 살아 있는 문화가 됩니다." }
+  },
+  {
+    id: 16, name: "주식회사 시드컴퍼니 언니네", short: "시드컴퍼니 언니네", category: "education", product: "로컬체험·답례품", page: 42,
+    phone: "054-917-8882", address: "영주시 부석면 봉황산로 103-9 / 중앙로 7", lat: 36.976, lng: 128.654,
+    description: "사람·자연·로컬이 더불어 사는 세상을 위해 로컬 문화예술 플랫폼 ‘영주씨네’를 운영합니다. 사회적경제기업 제품과 지역 농특산물, 체험·전시·교육·모임을 한 공간에서 연결합니다.",
+    values: ["로컬 플랫폼", "농특산물", "문화예술"],
+    mission: { q: "영주를 담은 답례품을 구성한다면 가장 좋은 방법은?", options: ["지역 농특산물과 제작자의 이야기를 함께 담는다", "어디서 만든 제품인지 숨긴다", "지역과 무관한 제품만 고른다"], answer: 0, learning: "로컬 제품과 생산자의 이야기를 함께 전달하면 선물에 지역의 정체성과 경제적 가치가 더해집니다." }
+  },
+  {
+    id: 17, name: "포인트교육 주식회사", short: "포인트교육", category: "education", product: "진로·직업 체험", page: 44,
+    phone: "054-632-7864", address: "영주시 구성로150번길 19", lat: 36.818, lng: 128.638,
+    description: "경북의 초·중·고 학생에게 100여 가지 직업과 진로 탐색 기회를 제공하는 교육기업입니다. 학교·공공기관과 협력해 지역에서도 다양한 직업을 직접 경험하도록 교육 접근성을 높입니다.",
+    values: ["진로 탐색", "교육 접근성", "청소년 성장"],
+    mission: { q: "좋은 진로체험 프로그램의 핵심은 무엇일까요?", options: ["인기 직업 하나만 강요한다", "학생이 다양한 직업을 직접 경험하고 적성을 탐색한다", "설명 없이 구경만 한다"], answer: 1, learning: "다양한 체험과 스스로의 성찰을 연결해야 학생이 자신의 흥미와 적성을 발견할 수 있습니다." }
+  },
+  {
+    id: 18, name: "주식회사 함께", short: "함께", category: "education", product: "인성체험·주거복지", page: 46,
+    phone: "054-638-1140", address: "영주시 영주로 174, 2층", lat: 36.826, lng: 128.620,
+    description: "양궁·국궁 인성체험학습과 양곡배송, 운송, 주거복지 집수리 사업을 운영합니다. 체험을 통한 인성교육과 지역사회 일자리, 안전한 주거환경을 함께 만듭니다.",
+    values: ["인성교육", "주거복지", "지역 일자리"],
+    mission: { q: "양궁·국궁 체험에서 인성을 배우는 태도로 알맞은 것은?", options: ["차례와 안전수칙을 지키며 서로 응원한다", "다른 사람의 장비를 허락 없이 쓴다", "결과만 보고 놀린다"], answer: 0, learning: "규칙·집중·배려를 함께 실천하는 과정이 체험학습을 인성교육으로 만들어 줍니다." }
+  },
+  {
+    id: 19, name: "다올 협동조합", short: "다올", category: "clothes", product: "생활의류·봉제", page: 50,
+    phone: "054-638-3951", address: "영주시 지천로 8, 2층", lat: 36.810, lng: 128.626,
+    description: "지역 근로자와 함께 봉제·임가공 서비스를 제공하고 앞치마·테이블매트·인견 잠옷 등 자체 제품을 생산해 온라인으로 판매합니다. 일자리와 지역 생산 기반을 함께 키웁니다.",
+    values: ["지역 일자리", "지역 생산", "생활의류"],
+    mission: { q: "오래 쓰는 앞치마를 주문할 때 가치소비에 가까운 선택은?", options: ["필요한 규격과 용도를 정해 튼튼하게 제작한다", "한 번 입고 버릴 제품을 고른다", "생산정보는 전혀 확인하지 않는다"], answer: 0, learning: "용도에 맞는 지역 제작품을 오래 사용하면 불필요한 소비를 줄이고 지역 일자리를 지킬 수 있습니다." }
+  },
+  {
+    id: 20, name: "사단법인 소백산천연염색협회", short: "소백산천연염색", category: "clothes", product: "천연염색 인견", page: 52,
+    phone: "054-635-5673", address: "영주시 풍기읍 동양대로99번길 6", lat: 36.872, lng: 128.526,
+    description: "지역 기후에 맞는 천연염료와 풍기인견을 결합해 전통 염색문화를 이어갑니다. 체험장과 귀촌인 창업교육을 통해 친환경 천연섬유의 우수성을 알리고 지역경제를 활성화합니다.",
+    values: ["천연염료", "풍기인견", "전통기술"],
+    mission: { q: "천연염색 체험에서 물과 환경을 배려하는 방법은?", options: ["필요한 만큼의 염료를 쓰고 남은 물을 올바르게 처리한다", "염료를 하천에 바로 버린다", "재료를 과하게 사용한다"], answer: 0, learning: "천연재료라도 적정량을 쓰고 폐수를 올바르게 처리해야 진정한 친환경 체험이 됩니다." }
+  },
+  {
+    id: 21, name: "주식회사 은탑", short: "은탑", category: "clothes", product: "인견 봉제·유통", page: 54,
+    phone: "054-638-7773", address: "영주시 창진로 127-1", lat: 36.842, lng: 128.624,
+    description: "인견 침구·의류·파우치 등 다양한 봉제품을 만들고 사회적경제기업 제품의 홍보·판매·유통을 돕습니다. 소비자의 접근성을 높여 입점기업의 판로와 매출을 넓히는 역할을 합니다.",
+    values: ["판로 확대", "사회적경제 유통", "지역제품"],
+    mission: { q: "작은 사회적경제기업의 판로를 넓히는 매장 운영 방법은?", options: ["한 기업 제품만 숨겨 판매한다", "여러 기업의 제품과 가치를 이해하기 쉽게 소개한다", "제품 설명을 모두 없앤다"], answer: 1, learning: "공동 홍보와 유통은 작은 기업이 더 많은 소비자를 만나도록 돕는 사회적경제의 협력 방식입니다." }
+  },
+  {
+    id: 22, name: "주식회사 조은", short: "조은", category: "clothes", product: "중고의류·신발", page: 56,
+    phone: "054-638-4488", address: "영주시 의상로 227", lat: 36.834, lng: 128.644,
+    description: "지역에서 헌옷과 신발을 수집해 분류·세탁·다림질한 뒤 재판매하거나 수출합니다. 취약계층에게 일자리를 제공하고 의류 폐기물을 줄여 환경 개선에 기여합니다.",
+    values: ["의류 재사용", "취약계층 고용", "자원순환"],
+    mission: { q: "수거한 헌옷을 가장 가치 있게 처리하는 순서는?", options: ["모두 바로 소각한다", "분류·세탁·수선 후 재판매하거나 재활용한다", "길가에 쌓아 둔다"], answer: 1, learning: "재사용할 수 있는 옷을 선별하고 깨끗하게 손질하면 폐기물을 줄이면서 새로운 일자리도 만들 수 있습니다." }
+  },
+  {
+    id: 23, name: "주식회사 신나는빗자루", short: "신나는빗자루", category: "cleaning", product: "건물·화장실 청소", page: 60,
+    phone: "054-638-5053", address: "영주시 광복로 42", lat: 36.828, lng: 128.625,
+    description: "학교·상가·빌라 등 건물 청소를 전문으로 하며 저소득층·고령자·경력단절여성에게 안정적이고 장기적인 일자리를 제공합니다. 지역사회 공헌활동도 함께 실천합니다.",
+    values: ["안정적 일자리", "환경 개선", "지역사회 공헌"],
+    mission: { q: "학교 화장실 청소 계획에서 가장 먼저 확인할 것은?", options: ["안전표지와 구역별 위생 절차", "세제를 무조건 많이 쓰기", "젖은 바닥을 그대로 두기"], answer: 0, learning: "청소는 구역별 도구와 절차, 안전표지를 지켜야 이용자와 근로자 모두에게 안전한 서비스가 됩니다." }
+  },
+  {
+    id: 24, name: "주식회사 영주유통공사", short: "영주유통공사", category: "cleaning", product: "에어컨 설치·청소", page: 62,
+    phone: "054-636-3445", address: "영주시 풍기읍 동양대로 145", lat: 36.871, lng: 128.536,
+    description: "전문적인 에어컨 설치와 청소서비스를 제공하며 신속하고 안전한 작업을 우선합니다. 인증 전문가가 최신 기술을 익히고 고객의 공간에 맞는 해결책을 제안합니다.",
+    values: ["전문 기술", "안전 설치", "쾌적한 환경"],
+    mission: { q: "에어컨을 안전하고 효율적으로 사용하기 위한 실천은?", options: ["필터를 정기적으로 청소하고 전문가에게 점검받는다", "이상한 소리가 나도 계속 사용한다", "전원을 켠 채 내부를 분해한다"], answer: 0, learning: "정기적인 필터 청소와 전문 점검은 실내 공기질과 에너지 효율, 이용자의 안전을 함께 높입니다." }
+  },
+  {
+    id: 25, name: "주식회사 태웅관리", short: "태웅관리", category: "cleaning", product: "건물관리·청소방역", page: 64,
+    phone: "054-638-1924", address: "영주시 숫골길23번길 4", lat: 36.813, lng: 128.635,
+    description: "건물유지·경비·청소·소독·저수조청소 등 종합관리 서비스를 제공합니다. 취약계층 일자리와 사회서비스, 이해관계자가 참여하는 의사결정을 통해 지역 공익을 높입니다.",
+    values: ["종합관리", "민주적 의사결정", "취약계층 고용"],
+    mission: { q: "공동주택 관리계획을 정할 때 사회적경제다운 방법은?", options: ["주민·근로자·관리자가 의견을 나누어 결정한다", "한 사람만 모든 내용을 비공개로 결정한다", "안전점검을 생략한다"], answer: 0, learning: "서비스 이용자와 근로자 등 이해관계자의 의견을 반영하면 더 공정하고 필요한 관리계획을 만들 수 있습니다." }
+  },
+  {
+    id: 26, name: "주식회사 금성개발", short: "금성개발", category: "manufacturing", product: "토목·상하수도·준설", page: 68,
+    phone: "054-638-4841", address: "영주시 지천로173번길 15", lat: 36.809, lng: 128.627,
+    description: "도로·상하수도·준설·안전진단 분야의 기술로 지역의 기반시설과 환경을 개선합니다. 시설 안전성 평가와 보수, 스마트 관리기술을 통해 지속가능한 지역 인프라를 만듭니다.",
+    values: ["안전 인프라", "수질 개선", "지속가능한 관리"],
+    mission: { q: "오래된 교량을 안전하게 관리하는 첫 단계는?", options: ["겉모습만 새로 칠한다", "전문 안전진단으로 결함과 구조 상태를 확인한다", "통행량을 확인하지 않는다"], answer: 1, learning: "정확한 안전진단을 바탕으로 보수 우선순위를 정해야 주민의 안전과 예산을 함께 지킬 수 있습니다." }
+  },
+  {
+    id: 27, name: "성방산업 주식회사", short: "성방산업", category: "manufacturing", product: "친환경 단열창호", page: 70,
+    phone: "054-637-8345", address: "영주시 장수면 장수로220번길 42", lat: 36.778, lng: 128.576,
+    description: "합성수지·알루미늄 단열창을 제조하며 품질·환경표지·녹색기술 등 여러 인증을 바탕으로 에너지 효율 높은 창호를 공급합니다. 지역의 직원·고객·이웃과 함께 성장하는 기업을 지향합니다.",
+    values: ["녹색기술", "에너지 절약", "품질 인증"],
+    mission: { q: "공공건물 창호를 고를 때 지속가능성을 높이는 기준은?", options: ["단열성능과 품질·환경 인증을 확인한다", "색상만 보고 고른다", "건물 크기와 규격을 확인하지 않는다"], answer: 0, learning: "단열성능이 좋은 인증 창호는 냉난방 에너지를 줄이고 건물을 더 오래 쾌적하게 사용할 수 있게 합니다." }
+  },
+  {
+    id: 28, name: "주식회사 예성", short: "예성", category: "manufacturing", product: "옥외광고·홍보물", page: 72,
+    phone: "054-633-7900", address: "영주시 시청로 32", lat: 36.805, lng: 128.623,
+    description: "간판·교통안전표지판·현수막·인쇄물·키오스크 등을 직접 생산하고 설치합니다. 지역인재를 고용하고 수익을 지역사회에 환원하며 다른 기업과의 협력을 통해 동반성장을 추구합니다.",
+    values: ["지역인재 고용", "수익 환원", "기업 협력"],
+    mission: { q: "모두가 읽기 쉬운 관광안내 표지판을 만들려면?", options: ["작은 글씨로 정보만 가득 채운다", "높은 대비·쉬운 문장·안전한 설치 위치를 고려한다", "방향표시는 생략한다"], answer: 1, learning: "공공 안내물은 어린이·어르신·관광객 누구나 빠르게 이해하도록 가독성과 접근성을 고려해야 합니다." }
+  },
+  {
+    id: 29, name: "주식회사 우리랑", short: "우리랑", category: "festival", product: "축제기획·지역콘텐츠", page: 76,
+    phone: "054-632-0111", address: "영주시 번영로102번길 28", lat: 36.823, lng: 128.628,
+    description: "지역 자원과 문화콘텐츠를 연결해 영상·마케팅·행사를 기획합니다. 지역문화예술인 공연과 농특산물 축제 등을 통해 영주의 매력을 알리고 지역 관광과 경제 활성화에 기여합니다.",
+    values: ["지역 관광", "문화예술인", "로컬 콘텐츠"],
+    mission: { q: "지역축제가 지역경제에 더 도움이 되도록 하는 방법은?", options: ["지역 예술인·상인·농가의 참여 기회를 넓힌다", "모든 물품을 외부에서만 산다", "지역 이야기를 행사에서 제외한다"], answer: 0, learning: "지역 구성원이 공연·판매·운영에 참여하면 축제의 수익과 경험이 지역 안에 더 오래 남습니다." }
+  },
+  {
+    id: 30, name: "주식회사 클라우드컬처스", short: "클라우드컬처스", category: "festival", product: "공연·축제 체험", page: 78,
+    phone: "054-638-4939", address: "영주시 중앙로106번길 17, 3층", lat: 36.824, lng: 128.625,
+    description: "공연·문화콘텐츠·디자인을 제작하고 누구나 일상에서 문화예술을 즐기는 세상을 꿈꿉니다. 예술가와 시민의 교류를 넓히며 축제 체험과 지역문화 기념품을 개발합니다.",
+    values: ["문화 접근성", "예술가 교류", "지역 기념품"],
+    mission: { q: "누구나 즐길 수 있는 문화행사를 만들기 위한 선택은?", options: ["연령·장애·비용 등 참여 장벽을 살핀다", "익숙한 사람만 초대한다", "안내 정보를 행사 직전에 숨긴다"], answer: 0, learning: "접근 가능한 안내와 다양한 체험, 합리적인 참여 방식은 더 많은 시민이 문화예술을 누리게 합니다." }
+  }
+];
+
+const SPACES = [
+  { type: "start", label: "출발", product: "가치 탐험 시작" },
+  ...BUSINESSES.slice(0, 15).map((business) => ({ type: "business", business })),
+  { type: "quiz", label: "황금정부지원", product: "랜덤 지원 뽑기" },
+  ...BUSINESSES.slice(15).map((business) => ({ type: "business", business }))
+];
+
+const GOVERNMENT_SUPPORTS = [
+  { icon: "📣", name: "판로개척 지원", value: "지역상품의 새로운 소비자 연결" },
+  { icon: "🧪", name: "상품개발 지원", value: "지역자원을 활용한 제품 혁신" },
+  { icon: "🏗️", name: "시설개선 지원", value: "안전하고 쾌적한 작업환경" },
+  { icon: "🎬", name: "홍보콘텐츠 지원", value: "기업의 사회적가치 확산" },
+  { icon: "🧑‍🏫", name: "인력양성 지원", value: "지역인재의 성장과 일자리" },
+  { icon: "💻", name: "디지털전환 지원", value: "더 편리하고 효율적인 서비스" },
+  { icon: "🤲", name: "사회서비스 지원", value: "돌봄과 생활서비스 접근성 향상" },
+  { icon: "🌿", name: "친환경전환 지원", value: "자원절약과 지속가능한 생산" }
+];
+
+const SYNERGIES = [
+  { id: 1, businesses: [1, 2], mission: "지역 한돈과 영주 농산물로 한돈 도시락 만들기", value: "지역순환·상생" },
+  { id: 2, businesses: [1, 4], mission: "영주 한우불고기 프리미엄 도시락 만들기", value: "농가상생·로컬푸드" },
+  { id: 3, businesses: [1, 7], mission: "지역 농산물을 공동구매해 단체급식과 도시락에 공급하기", value: "협력·유통비 절감" },
+  { id: 4, businesses: [2, 7], mission: "한돈을 먹기 편한 크기로 손질한 맞춤 급식 만들기", value: "돌봄·안전한 먹거리" },
+  { id: 5, businesses: [4, 7], mission: "한우불고기를 활용한 행사·단체 도시락 만들기", value: "판로확대·협력" },
+  { id: 6, businesses: [3, 8], mission: "어린이 홍삼과 영주 쌀빵을 묶은 건강 간식세트 만들기", value: "지역농산물·상품개발" },
+  { id: 7, businesses: [5, 6], mission: "홍삼스틱·홍삼차·홍삼절편 공동 선물세트 만들기", value: "공동판로·상생" },
+  { id: 8, businesses: [9, 3], mission: "어린이·성인별 맞춤 건강식품과 순수차 세트 구성하기", value: "건강·협력" },
+  { id: 9, businesses: [8, 16], mission: "영주 쌀빵 만들기와 로컬푸드 체험 프로그램 운영하기", value: "로컬교육·농가소득" },
+  { id: 10, businesses: [9, 14], mission: "자락길 걷기 참가자에게 지역 순수차 휴식세트 제공하기", value: "관광·지역소비" },
+  { id: 11, businesses: [10, 30], mission: "공연 캐릭터를 활용한 원목 기념품 체험 만들기", value: "문화예술·일자리" },
+  { id: 12, businesses: [10, 28], mission: "원목 안내판과 관광 사인물을 공동 제작하기", value: "기술협력·지역홍보" },
+  { id: 13, businesses: [11, 18], mission: "돌봄 대상자의 병원동행·가사·집수리를 함께 지원하기", value: "통합돌봄·주거복지" },
+  { id: 14, businesses: [11, 7], mission: "방문 돌봄 이용자에게 맞춤형 도시락을 배달하기", value: "돌봄·사회서비스" },
+  { id: 15, businesses: [12, 16], mission: "원도심 관광·공예·로컬디저트를 결합한 체험여행 운영하기", value: "관광활성화·협력" },
+  { id: 16, businesses: [13, 20], mission: "자연재료 물감과 천연염색을 결합한 친환경 체험 운영하기", value: "환경·전통문화" },
+  { id: 17, businesses: [14, 29], mission: "자락길 걷기축제를 기획하고 영상·SNS로 홍보하기", value: "관광·지역홍보" },
+  { id: 18, businesses: [15, 30], mission: "전통농악과 현대 공연을 결합한 문화공연 만들기", value: "문화계승·예술일자리" },
+  { id: 19, businesses: [17, 10], mission: "목공 전문가 진로·직업 체험 프로그램 운영하기", value: "진로교육·기술전수" },
+  { id: 20, businesses: [17, 28], mission: "광고디자이너·간판제작자 직업 체험 운영하기", value: "청소년교육·지역인재" },
+  { id: 21, businesses: [18, 15], mission: "국궁·양궁과 전통놀이를 결합한 인성교육 운영하기", value: "인성교육·문화계승" },
+  { id: 22, businesses: [19, 20], mission: "천연염색 원단으로 앞치마·잠옷·생활의류 제작하기", value: "친환경·지역생산" },
+  { id: 23, businesses: [20, 21], mission: "천연염색 인견을 봉제해 침구·의류·소품으로 판매하기", value: "생산협력·판로확대" },
+  { id: 24, businesses: [21, 22], mission: "재사용 가능한 중고의류로 파우치와 생활용품 제작하기", value: "자원순환·일자리" },
+  { id: 25, businesses: [22, 13], mission: "헌옷을 활용한 업사이클링 공예 체험 운영하기", value: "환경·재사용" },
+  { id: 26, businesses: [23, 7], mission: "급식시설과 조리공간의 정기 청소·위생관리 진행하기", value: "위생·취약계층 일자리" },
+  { id: 27, businesses: [24, 1], mission: "급식시설 에어컨 설치·청소로 쾌적한 조리환경 만들기", value: "안전·전문서비스" },
+  { id: 28, businesses: [25, 11], mission: "돌봄 이용자의 주거시설 청소·방역·안전관리를 지원하기", value: "주거안전·돌봄" },
+  { id: 29, businesses: [26, 27], mission: "안전진단과 단열창호 시공으로 에너지 절약형 시설 만들기", value: "안전·환경·기술협력" },
+  { id: 30, businesses: [28, 29, 30], mission: "축제 홍보물·행사기획·문화공연을 결합한 사회적경제 축제 개최", value: "공동체·협력·지역경제" }
+];
+
+const MINIGAME_FILES = {
+  1: "1-sobaek-localfood-lunchbox.html", 2: "2-sobaeksan-handon-cut (1).html", 3: "03-sobaek-gnf-premium.html",
+  4: "4-seunghye-hanwoo-cut.html", 5: "05-eoullim-premium.html", 6: "06-olgoji-premium.html",
+  7: "7-ineat-care-lunchbox.html", 8: "08-farmsbridge-premium.html", 9: "09-heuksarang-premium.html",
+  10: "10-dreamwood-premium.html", 11: "11-neulpum-premium.html", 12: "12-dream-culture-premium.html",
+  13: "13-moduda-premium.html", 14: "14-sobaeksan-jarakgil-premium.html", 15: "15-sunheung-nongak-premium.html",
+  16: "16-seed-unnine-premium.html", 17: "17-point-education-premium.html", 18: "18-hamkke-premium.html",
+  19: "19-daol-premium.html", 20: "20-natural-dye-premium.html", 21: "21-euntap-premium.html",
+  22: "22-joeun-premium.html", 23: "23-exciting-broom-premium.html", 24: "24-yeongju-distribution-premium.html",
+  25: "25-taewoong-premium.html", 26: "26-geumseong-development-premium.html", 27: "27-seongbang-industry-premium.html",
+  28: "28-yesung-premium.html", 29: "29-urirang-premium.html", 30: "30-cloud-cultures-premium.html"
+};
+
+const STORAGE_KEY = "yeongju-value-board-v1";
+const DICE_FACES = ["📍", "🔎", "🧭", "🌱", "🤝", "✨"];
+const defaultState = { position: 0, score: 0, discovered: [], completed: [], recent: [], synergies: [] };
+let state = loadState();
+let moving = false;
+let map;
+let markerGroup;
+let toastTimer;
+
+const board = document.querySelector("#board");
+const dialog = document.querySelector("#companyDialog");
+const dialogContent = document.querySelector("#dialogContent");
+const minigameDialog = document.querySelector("#minigameDialog");
+const minigameFrame = document.querySelector("#minigameFrame");
+let activeMinigameBusinessId = null;
+const rollButton = document.querySelector("#rollButton");
+const dice = document.querySelector("#dice");
+const mobileTrack = document.querySelector("#mobileTrack");
+
+function loadState() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    return saved ? { ...defaultState, ...saved } : { ...defaultState };
+  } catch {
+    return { ...defaultState };
+  }
+}
+
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch { /* play remains available */ }
+}
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>'"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[character]);
+}
+
+function perimeterPosition(index) {
+  if (index <= 8) return { row: 1, column: index + 1 };
+  if (index <= 16) return { row: index - 7, column: 9 };
+  if (index <= 24) return { row: 9, column: 25 - index };
+  return { row: 33 - index, column: 1 };
+}
+
+function renderBoard() {
+  board.querySelectorAll(".board-space").forEach((node) => node.remove());
+  SPACES.forEach((space, index) => {
+    const position = perimeterPosition(index);
+    const tile = document.createElement("button");
+    tile.type = "button";
+    tile.className = `board-space space-${space.type}`;
+    tile.dataset.spaceIndex = index;
+    tile.style.gridRow = position.row;
+    tile.style.gridColumn = position.column;
+
+    if (space.type === "business") {
+      const business = space.business;
+      const meta = CATEGORY_META[business.category];
+      tile.style.setProperty("--category-color", meta.color);
+      tile.innerHTML = `<span class="space-number">${String(business.id).padStart(2, "0")} · ${meta.label}</span><strong class="space-name">${escapeHtml(business.short)}</strong><span class="space-product">${escapeHtml(business.product)}</span>`;
+      tile.setAttribute("aria-label", `${business.id}번 ${business.name}, ${business.product} 정보 보기`);
+      tile.addEventListener("click", () => openCompany(business.id - 1));
+    } else {
+      tile.innerHTML = `<strong>${escapeHtml(space.label)}</strong><small>${escapeHtml(space.product)}</small>`;
+      tile.addEventListener("click", () => space.type === "quiz" ? openGovernmentDraw() : showToast("기업 찾아보기를 눌러 체험을 시작하세요!"));
+    }
+    board.appendChild(tile);
+  });
+}
+
+function renderMobileTrack() {
+  mobileTrack.innerHTML = BUSINESSES.map((business) => {
+    const meta = CATEGORY_META[business.category];
+    const spaceIndex = SPACES.findIndex((space) => space.business?.id === business.id);
+    return `<button class="mobile-space" type="button" data-business-id="${business.id}" data-space-index="${spaceIndex}" style="--category-color:${meta.color}"><small>${String(business.id).padStart(2, "0")} · ${meta.label}</small><strong>${escapeHtml(business.short)}</strong><span>${escapeHtml(business.product)}</span></button>`;
+  }).join("");
+  mobileTrack.querySelectorAll(".mobile-space").forEach((tile) => tile.addEventListener("click", () => openCompany(Number(tile.dataset.businessId) - 1)));
+}
+
+function renderLegend() {
+  document.querySelector("#legend").innerHTML = Object.values(CATEGORY_META).map((meta) => `<span class="legend-item"><i style="--legend-color:${meta.color}"></i>${meta.label}</span>`).join("");
+}
+
+function collectSynergies() {
+  if (!Array.isArray(state.synergies)) state.synergies = [];
+  const newlyUnlocked = SYNERGIES.filter((synergy) => !state.synergies.includes(synergy.id) && synergy.businesses.every((id) => state.completed.includes(id)));
+  newlyUnlocked.forEach((synergy) => state.synergies.push(synergy.id));
+  return newlyUnlocked;
+}
+
+function renderSynergies() {
+  const list = document.querySelector("#synergyList");
+  if (!list) return;
+  if (!Array.isArray(state.synergies)) state.synergies = [];
+  document.querySelector("#synergyCount").textContent = `${state.synergies.length} / ${SYNERGIES.length}`;
+  document.querySelector("#synergyTopCount").textContent = state.synergies.length;
+  const ordered = [...SYNERGIES].sort((a, b) => {
+    const aUnlocked = state.synergies.includes(a.id);
+    const bUnlocked = state.synergies.includes(b.id);
+    if (aUnlocked !== bUnlocked) return aUnlocked ? -1 : 1;
+    const aDone = a.businesses.filter((id) => state.completed.includes(id)).length / a.businesses.length;
+    const bDone = b.businesses.filter((id) => state.completed.includes(id)).length / b.businesses.length;
+    return bDone - aDone || a.id - b.id;
+  });
+  list.innerHTML = ordered.map((synergy) => {
+    const completed = synergy.businesses.filter((id) => state.completed.includes(id)).length;
+    const unlocked = state.synergies.includes(synergy.id);
+    const names = synergy.businesses.map((id) => BUSINESSES.find((business) => business.id === id)?.short || id).join(" × ");
+    return `<article class="synergy-item ${unlocked ? "unlocked" : ""}"><strong>${unlocked ? "✨" : "🔒"} ${escapeHtml(names)}</strong><p>${escapeHtml(synergy.mission)}</p><small>${unlocked ? "협업 시너지 수집 완료" : `기업 체험 ${completed} / ${synergy.businesses.length}`}</small><div class="synergy-progress" aria-hidden="true"><i style="width:${(completed / synergy.businesses.length) * 100}%"></i></div><span class="synergy-value">${escapeHtml(synergy.value)}</span></article>`;
+  }).join("");
+}
+
+function renderState({ scrollMobile = false } = {}) {
+  document.querySelectorAll(".token").forEach((node) => node.remove());
+  document.querySelectorAll(".board-space").forEach((tile) => {
+    const spaceIndex = Number(tile.dataset.spaceIndex);
+    const businessId = SPACES[spaceIndex]?.business?.id;
+    tile.classList.toggle("current", spaceIndex === state.position);
+    tile.classList.toggle("done", Boolean(businessId && state.completed.includes(businessId)));
+  });
+  document.querySelectorAll(".mobile-space").forEach((tile) => {
+    const businessId = Number(tile.dataset.businessId);
+    const isCurrent = Number(tile.dataset.spaceIndex) === state.position;
+    tile.classList.toggle("current", isCurrent);
+    tile.classList.toggle("done", state.completed.includes(businessId));
+    if (isCurrent && scrollMobile && window.innerWidth <= 800) tile.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  });
+
+  const activeTile = document.querySelector(`.board-space[data-space-index="${state.position}"]`);
+  if (activeTile) {
+    const token = document.createElement("span");
+    token.className = "token";
+    token.textContent = "나";
+    token.setAttribute("aria-label", "내 말");
+    activeTile.appendChild(token);
+  }
+
+  const currentSpace = SPACES[state.position];
+  const positionText = currentSpace.type === "business" ? currentSpace.business.short : currentSpace.label;
+  document.querySelector("#positionLabel").textContent = positionText;
+  document.querySelector("#completedCount").textContent = state.completed.length;
+  document.querySelector("#discoveredCount").textContent = `${state.discovered.length}곳`;
+  document.querySelector("#valueScore").textContent = state.score;
+  document.querySelector("#progressBar").style.width = `${(state.completed.length / BUSINESSES.length) * 100}%`;
+  renderSynergies();
+  renderRecent();
+}
+
+function renderRecent() {
+  const holder = document.querySelector("#recentList");
+  if (!state.recent.length) {
+    holder.innerHTML = `<p class="empty-copy">아직 발견한 기업이 없어요.<br>기업 찾아보기를 눌러 보세요!</p>`;
+    return;
+  }
+  holder.innerHTML = state.recent.slice(0, 4).map((id) => {
+    const business = BUSINESSES[id - 1];
+    const meta = CATEGORY_META[business.category];
+    return `<button class="recent-item" type="button" data-business-id="${id}"><i class="recent-dot" style="--dot:${meta.color}"></i><span><strong>${escapeHtml(business.short)}</strong><small>${escapeHtml(business.product)}</small></span><em>${state.completed.includes(id) ? "완료" : "발견"}</em></button>`;
+  }).join("");
+  holder.querySelectorAll(".recent-item").forEach((item) => item.addEventListener("click", () => openCompany(Number(item.dataset.businessId) - 1)));
+}
+
+function discoverBusiness(business) {
+  if (!state.discovered.includes(business.id)) state.discovered.push(business.id);
+  state.recent = [business.id, ...state.recent.filter((id) => id !== business.id)].slice(0, 8);
+  saveState();
+  renderState();
+}
+
+function companyShell(business, inner) {
+  const meta = CATEGORY_META[business.category];
+  return `<article style="--company-color:${meta.color}"><header class="company-hero"><span class="company-index">${String(business.id).padStart(2, "0")} · ${meta.label}</span><h2 id="dialogTitle">${escapeHtml(business.short)}</h2><p>${escapeHtml(business.product)}</p></header><div class="company-body">${inner}</div></article>`;
+}
+
+function openCompany(index) {
+  const business = BUSINESSES[index];
+  if (!business) return;
+  discoverBusiness(business);
+  const completed = state.completed.includes(business.id);
+  dialogContent.innerHTML = companyShell(business, `
+    <div class="value-chips">${business.values.map((value) => `<span class="value-chip">${escapeHtml(value)}</span>`).join("")}</div>
+    <section class="company-section"><h3>기업 이야기</h3><p>${escapeHtml(business.description)}</p></section>
+    <section class="company-section product-box"><h3>주요 상품·서비스</h3><p>${escapeHtml(business.product)}</p></section>
+    <div class="info-grid"><div><small>대표전화</small><strong>${escapeHtml(business.phone)}</strong></div><div><small>주소</small><strong>${escapeHtml(business.address)}</strong></div></div>
+    <span class="guide-source">상품안내서 ${business.page}쪽 내용 반영</span>
+    <div class="dialog-actions"><button class="secondary-button" type="button" data-action="close">지도로 돌아가기</button><button class="primary-button" type="button" data-action="mission">${completed ? "미니게임 다시 체험" : "미니게임 체험 시작"}</button></div>
+  `);
+  wireDialogButtons(business);
+  if (!dialog.open) dialog.showModal();
+}
+
+function wireDialogButtons(business) {
+  dialogContent.querySelector('[data-action="close"]')?.addEventListener("click", () => dialog.close());
+  dialogContent.querySelector('[data-action="mission"]')?.addEventListener("click", () => openMinigame(business));
+}
+
+function openMinigame(business) {
+  const filename = MINIGAME_FILES[business.id];
+  if (!filename) {
+    showToast("이 기업의 미니게임 파일을 찾지 못했습니다.");
+    return;
+  }
+  activeMinigameBusinessId = business.id;
+  document.querySelector("#minigameTitle").textContent = `${business.short} · 미니게임 체험`;
+  document.querySelector("#minigameStatus").textContent = state.completed.includes(business.id) ? "완료한 체험 · 다시 도전" : "체험 진행 중";
+  minigameFrame.src = new URL(`minigames/${filename}`, window.location.href).href;
+  dialog.close();
+  if (!minigameDialog.open) minigameDialog.showModal();
+}
+
+function closeMinigame() {
+  if (minigameDialog.open) minigameDialog.close();
+  minigameFrame.src = "about:blank";
+  activeMinigameBusinessId = null;
+  resetMapView();
+  rollButton.focus();
+}
+
+function completeMinigameExperience(businessId) {
+  const business = BUSINESSES.find((item) => item.id === businessId);
+  if (!business) return;
+  const firstCompletion = !state.completed.includes(businessId);
+  let newlyUnlocked = [];
+  if (firstCompletion) {
+    state.completed.push(businessId);
+    state.score += 20;
+    newlyUnlocked = collectSynergies();
+    saveState();
+    renderState();
+  }
+  document.querySelector("#minigameStatus").textContent = newlyUnlocked.length ? `체험 완료 · 협업가치 ${newlyUnlocked.length}개 해금!` : "체험 완료 ✓";
+  showToast(newlyUnlocked.length ? `${business.short} 체험 완료! 협업 사회적가치 ${newlyUnlocked.length}개를 수집했어요.` : `${business.short} 미니게임 체험을 완료했어요!`);
+  resetMapView();
+}
+
+function renderMission(business) {
+  const meta = CATEGORY_META[business.category];
+  dialogContent.innerHTML = companyShell(business, `
+    <div class="mission-head"><span class="mission-icon">${meta.icon}</span><span><h3>가치 선택 미션</h3><p>기업의 활동을 떠올리며 가장 알맞은 답을 골라보세요.</p></span></div>
+    <p class="mission-question">${escapeHtml(business.mission.q)}</p>
+    <div class="choice-list">${business.mission.options.map((option, choiceIndex) => `<button class="choice-button" type="button" data-choice="${choiceIndex}"><span>${choiceIndex + 1}</span>${escapeHtml(option)}</button>`).join("")}</div>
+    <div id="missionFeedback"></div>
+    <div class="dialog-actions"><button class="secondary-button" type="button" data-action="back">기업 소개 다시 보기</button></div>
+  `);
+  dialogContent.querySelector('[data-action="back"]').addEventListener("click", () => openCompany(business.id - 1));
+  dialogContent.querySelectorAll("[data-choice]").forEach((button) => button.addEventListener("click", () => answerMission(business, Number(button.dataset.choice))));
+}
+
+function answerMission(business, choice) {
+  const buttons = [...dialogContent.querySelectorAll("[data-choice]")];
+  const feedback = document.querySelector("#missionFeedback");
+  buttons.forEach((button) => {
+    button.disabled = true;
+    if (Number(button.dataset.choice) === business.mission.answer) button.classList.add("correct");
+  });
+
+  if (choice !== business.mission.answer) {
+    buttons[choice].classList.add("wrong");
+    feedback.innerHTML = `<div class="feedback-box"><strong>조금 더 생각해 볼까요?</strong><p>${escapeHtml(business.mission.learning)}</p></div><div class="dialog-actions"><button class="primary-button" type="button" data-action="retry">다시 선택하기</button></div>`;
+    feedback.querySelector('[data-action="retry"]').addEventListener("click", () => renderMission(business));
+    return;
+  }
+
+  const firstCompletion = !state.completed.includes(business.id);
+  let newlyUnlocked = [];
+  if (firstCompletion) {
+    state.completed.push(business.id);
+    state.score += 20;
+    newlyUnlocked = collectSynergies();
+    saveState();
+    renderState();
+  }
+  resetMapView();
+  feedback.innerHTML = `<div class="feedback-box"><strong>정답이에요!</strong><p>${escapeHtml(business.mission.learning)}</p></div><div class="dialog-actions"><button class="primary-button" type="button" data-action="reward">결과 확인</button></div>`;
+  feedback.querySelector('[data-action="reward"]').addEventListener("click", () => renderReward(business, firstCompletion, newlyUnlocked));
+}
+
+function renderReward(business, firstCompletion, newlyUnlocked = []) {
+  const synergyResults = newlyUnlocked.map((synergy) => `<div class="synergy-unlock"><strong>✨ 협업 시너지 수집!</strong><p>${escapeHtml(synergy.mission)}<br><b>${escapeHtml(synergy.value)}</b></p></div>`).join("");
+  dialogContent.innerHTML = companyShell(business, `
+    <div class="reward-card"><span class="reward-icon">${state.completed.length === 30 ? "🏆" : "✨"}</span><h3>${state.completed.length === 30 ? "모든 기업 탐험 완료!" : `${escapeHtml(business.short)} 체험 완료`}</h3><p>${escapeHtml(business.values[0])}의 의미를 배우고<br>영주의 사회적가치를 한 걸음 키웠어요.</p><span class="reward-score">${firstCompletion ? "+20 가치점수" : "이미 획득한 배지예요"}</span></div>
+    ${synergyResults}
+    <div class="dialog-actions"><button class="secondary-button" type="button" data-action="intro">기업 소개 보기</button><button class="primary-button" type="button" data-action="close">다음 기업 찾아보기</button></div>
+  `);
+  dialogContent.querySelector('[data-action="intro"]').addEventListener("click", () => openCompany(business.id - 1));
+  dialogContent.querySelector('[data-action="close"]').addEventListener("click", () => { dialog.close(); rollButton.focus(); });
+}
+
+function openGovernmentDraw() {
+  const supportCard = { id: "GOLD", category: "education", short: "황금정부지원", product: "랜덤 지원 뽑기" };
+  dialogContent.innerHTML = companyShell(supportCard, `
+    <div class="mission-head"><span class="mission-icon">🎫</span><span><h3>황금정부지원 뽑기</h3><p>지원사업과 연결될 기업 체험이 무작위로 선정됩니다.</p></span></div>
+    <div class="support-draw"><div><div class="support-machine" id="supportMachine">🎁</div><p>어떤 정부지원과 기업 체험이 연결될까요?</p><button class="primary-button" type="button" data-action="draw-support">지원 뽑기</button></div></div>
+    <div class="dialog-actions"><button class="secondary-button" type="button" data-action="close">지도로 돌아가기</button></div>
+  `);
+  dialogContent.querySelector('[data-action="close"]').addEventListener("click", () => dialog.close());
+  dialogContent.querySelector('[data-action="draw-support"]').addEventListener("click", drawGovernmentSupport);
+  if (!dialog.open) dialog.showModal();
+}
+
+async function drawGovernmentSupport() {
+  const button = dialogContent.querySelector('[data-action="draw-support"]');
+  const machine = document.querySelector("#supportMachine");
+  button.disabled = true;
+  machine.classList.add("drawing");
+  for (let index = 0; index < 12; index += 1) {
+    machine.textContent = GOVERNMENT_SUPPORTS[index % GOVERNMENT_SUPPORTS.length].icon;
+    await wait(75);
+  }
+  const support = GOVERNMENT_SUPPORTS[Math.floor(Math.random() * GOVERNMENT_SUPPORTS.length)];
+  const uncompleted = BUSINESSES.filter((business) => !state.completed.includes(business.id));
+  const candidates = uncompleted.length ? uncompleted : BUSINESSES;
+  const business = candidates[Math.floor(Math.random() * candidates.length)];
+  dialogContent.querySelector(".company-body").innerHTML = `
+    <div class="support-result"><span class="support-icon">${support.icon}</span><h3>${escapeHtml(support.name)} 당첨!</h3><p>${escapeHtml(support.value)}</p><div class="support-target">연결 기업체험<br>${escapeHtml(business.short)} · ${escapeHtml(business.product)}</div></div>
+    <div class="dialog-actions"><button class="secondary-button" type="button" data-action="again">다시 뽑기</button><button class="primary-button" type="button" data-action="linked-game">연결 미니게임 시작</button></div>`;
+  dialogContent.querySelector('[data-action="again"]').addEventListener("click", openGovernmentDraw);
+  dialogContent.querySelector('[data-action="linked-game"]').addEventListener("click", () => openMinigame(business));
+}
+
+function wait(ms) { return new Promise((resolve) => window.setTimeout(resolve, ms)); }
+
+async function performRoll(forcedRoll) {
+  if (moving || dialog.open) return null;
+  moving = true;
+  rollButton.disabled = true;
+  dice.classList.add("rolling");
+  document.querySelector("#turnHint").textContent = "다음 기업을 찾는 중…";
+  const roll = forcedRoll || Math.floor(Math.random() * 6) + 1;
+  for (let index = 0; index < 8; index += 1) {
+    dice.textContent = DICE_FACES[Math.floor(Math.random() * 6)];
+    await wait(65);
+  }
+  dice.textContent = DICE_FACES[roll - 1];
+  dice.setAttribute("aria-label", `기업 탐색 이동 ${roll}곳`);
+  dice.classList.remove("rolling");
+  document.querySelector("#turnHint").textContent = `${roll}칸 이동해요`;
+
+  for (let step = 0; step < roll; step += 1) {
+    state.position = (state.position + 1) % SPACES.length;
+    if (state.position === 0) {
+      state.score += 5;
+      showToast("한 바퀴 보너스! +5 가치점수");
+    }
+    renderState({ scrollMobile: true });
+    await wait(window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 30 : 210);
+  }
+  saveState();
+
+  const landed = SPACES[state.position];
+  if (landed.type === "business") {
+    document.querySelector("#turnHint").textContent = "기업에 도착했어요! 지도를 확대합니다.";
+    focusBusinessOnMap(landed.business);
+    await wait(window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 120 : 900);
+    openCompany(landed.business.id - 1);
+  } else if (landed.type === "quiz") {
+    document.querySelector("#turnHint").textContent = "황금정부지원에 도착했어요!";
+    openGovernmentDraw();
+  } else {
+    document.querySelector("#turnHint").textContent = "다시 힘차게 출발해요";
+    showToast("출발점에 도착했어요!");
+  }
+  moving = false;
+  rollButton.disabled = false;
+  return { roll, position: state.position, space: landed.type, business_id: landed.business?.id || null };
+}
+
+function showToast(message) {
+  const toast = document.querySelector("#toast");
+  toast.textContent = message;
+  toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
+}
+
+function renderOfflineMap() {
+  const fallback = document.querySelector("#mapFallback");
+  const note = document.querySelector("#mapNote");
+  const minLat = Math.min(...BUSINESSES.map((business) => business.lat));
+  const maxLat = Math.max(...BUSINESSES.map((business) => business.lat));
+  const minLng = Math.min(...BUSINESSES.map((business) => business.lng));
+  const maxLng = Math.max(...BUSINESSES.map((business) => business.lng));
+  const position = (business) => ({
+    left: 8 + ((business.lng - minLng) / (maxLng - minLng || 1)) * 84,
+    top: 8 + ((maxLat - business.lat) / (maxLat - minLat || 1)) * 84
+  });
+
+  fallback.innerHTML = `
+    <svg class="offline-map-art" viewBox="0 0 1000 650" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="mapLand" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#eef6df"/><stop offset="1" stop-color="#cde5d5"/></linearGradient>
+        <pattern id="mapGrid" width="55" height="55" patternUnits="userSpaceOnUse"><path d="M55 0H0V55" fill="none" stroke="#fff" stroke-opacity=".42"/></pattern>
+      </defs>
+      <rect width="1000" height="650" fill="#d9ece3"/>
+      <path d="M530 26 692 68 810 162 900 295 842 421 905 560 727 620 594 574 452 625 326 552 178 570 99 451 142 330 88 217 210 121 368 91Z" fill="url(#mapLand)" stroke="#7fae91" stroke-width="5"/>
+      <path d="M530 26 692 68 810 162 900 295 842 421 905 560 727 620 594 574 452 625 326 552 178 570 99 451 142 330 88 217 210 121 368 91Z" fill="url(#mapGrid)"/>
+      <g fill="none" stroke-linecap="round">
+        <path d="M172 540C280 465 310 382 430 330S626 260 835 120" stroke="#fff" stroke-width="15"/><path d="M172 540C280 465 310 382 430 330S626 260 835 120" stroke="#efbd69" stroke-width="5"/>
+        <path d="M198 145C330 218 418 270 480 365S570 510 730 595" stroke="#fff" stroke-width="12"/><path d="M198 145C330 218 418 270 480 365S570 510 730 595" stroke="#9eb9a8" stroke-width="4"/>
+        <path d="M548 55C515 165 548 248 518 332S438 490 474 610" stroke="#87c9df" stroke-width="7"/>
+        <path d="M110 344C272 315 350 359 468 350S690 319 884 370" stroke="#b5c8bc" stroke-width="4" stroke-dasharray="10 12"/>
+      </g>
+      <g fill="#a9c9b3" opacity=".6"><circle cx="225" cy="235" r="38"/><circle cx="742" cy="220" r="55"/><circle cx="690" cy="472" r="42"/><circle cx="330" cy="485" r="52"/></g>
+    </svg>
+    <span class="offline-map-label" style="left:49%;top:10%">부석·순흥</span>
+    <span class="offline-map-label" style="left:17%;top:36%">풍기</span>
+    <span class="offline-map-label" style="left:55%;top:49%">영주 도심</span>
+    <span class="offline-map-label" style="left:39%;top:76%">장수·문수</span>
+    ${BUSINESSES.map((business) => {
+      const point = position(business);
+      const meta = CATEGORY_META[business.category];
+      return `<button class="offline-business-marker" type="button" data-map-business="${business.id}" title="${escapeHtml(business.name)} · ${escapeHtml(business.product)}" aria-label="${business.id}번 ${escapeHtml(business.name)} 정보 보기" style="left:${point.left.toFixed(2)}%;top:${point.top.toFixed(2)}%;--marker-color:${meta.color}"><span>${business.id}</span></button>`;
+    }).join("")}
+    <p class="offline-map-caption">상품안내서 주소 기반 약식 위치도 · 인터넷 연결 불필요</p>`;
+
+  fallback.querySelectorAll("[data-map-business]").forEach((marker) => marker.addEventListener("click", () => openCompany(Number(marker.dataset.mapBusiness) - 1)));
+  note.textContent = "상품안내서 주소를 바탕으로 한 오프라인 교육용 위치 안내입니다.";
+  document.querySelector("#fitMapButton").onclick = () => showToast("30개 기업의 전체 위치를 표시하고 있습니다.");
+}
+
+function initMap() {
+  if (!window.L || !window.maplibregl || !L.maplibreGL) {
+    renderOfflineMap();
+    return;
+  }
+
+  const fallback = document.querySelector("#mapFallback");
+  const note = document.querySelector("#mapNote");
+  try {
+    map = L.map("map", { zoomControl: true, attributionControl: true, minZoom: 9 }).setView([36.84, 128.61], 11);
+    const base = L.maplibreGL({ style: "https://tiles.openfreemap.org/styles/liberty" }).addTo(map);
+    let mapLoaded = false;
+    let mapErrors = 0;
+    base.getMaplibreMap().on("load", () => {
+      mapLoaded = true;
+      fallback.style.display = "none";
+      note.textContent = "지도 표시는 상품안내서의 주소를 바탕으로 한 교육용 위치 안내입니다.";
+    });
+    base.getMaplibreMap().on("error", () => {
+      mapErrors += 1;
+      if (!map || mapLoaded || mapErrors < 3) return;
+      note.textContent = "실제 지도를 불러오지 못해 오프라인 약식지도로 전환했습니다.";
+      try { map.remove(); } catch { /* already removed */ }
+      map = null;
+      renderOfflineMap();
+    });
+
+    markerGroup = L.featureGroup().addTo(map);
+    BUSINESSES.forEach((business) => {
+      const meta = CATEGORY_META[business.category];
+      const icon = L.divIcon({
+        className: "business-marker-wrap",
+        html: `<span style="display:grid;place-items:center;width:1.65rem;height:1.65rem;border:3px solid white;border-radius:50% 50% 50% .25rem;color:white;background:${meta.color};font-size:.68rem;font-weight:900;box-shadow:0 4px 9px rgba(0,0,0,.28);transform:rotate(-45deg)"><b style="transform:rotate(45deg)">${business.id}</b></span>`,
+        iconSize: [28, 28], iconAnchor: [14, 25], popupAnchor: [0, -22]
+      });
+      const marker = L.marker([business.lat, business.lng], { icon }).addTo(markerGroup);
+      marker.bindPopup(`<strong>${escapeHtml(business.short)}</strong><span>${escapeHtml(business.product)}</span><button type="button" data-map-business="${business.id}">기업 알아보기</button>`);
+      marker.on("popupopen", (event) => event.popup.getElement()?.querySelector("[data-map-business]")?.addEventListener("click", () => openCompany(business.id - 1)));
+    });
+    map.fitBounds(markerGroup.getBounds().pad(.08));
+    document.querySelector("#fitMapButton").onclick = () => map?.fitBounds(markerGroup.getBounds().pad(.08));
+  } catch {
+    map = null;
+    renderOfflineMap();
+  }
+}
+
+function focusBusinessOnMap(business) {
+  if (map && markerGroup) {
+    map.invalidateSize();
+    map.flyTo([business.lat, business.lng], 15, { duration: .8 });
+    return;
+  }
+  document.querySelectorAll(".offline-business-marker").forEach((marker) => marker.classList.toggle("map-focused", Number(marker.dataset.mapBusiness) === business.id));
+}
+
+function resetMapView() {
+  document.querySelectorAll(".offline-business-marker.map-focused").forEach((marker) => marker.classList.remove("map-focused"));
+  if (map && markerGroup) {
+    map.invalidateSize();
+    map.fitBounds(markerGroup.getBounds().pad(.08));
+  }
+}
+
+function registerWebMCP() {
+  const context = document.modelContext;
+  if (!context?.registerTool) return;
+  const tools = [
+    {
+      name: "get_exploration_progress",
+      title: "탐험 진행 상황 보기",
+      description: "현재 가치점수, 발견한 기업, 완료한 기업 체험 수를 확인합니다.",
+      inputSchema: { type: "object", properties: {}, additionalProperties: false },
+      annotations: { readOnlyHint: true, untrustedContentHint: false },
+      execute: () => ({ score: state.score, discovered_count: state.discovered.length, completed_count: state.completed.length, position: state.position })
+    },
+    {
+      name: "open_social_enterprise",
+      title: "사회적경제기업 열기",
+      description: "기업 번호로 해당 기업의 소개와 체험 화면을 엽니다.",
+      inputSchema: { type: "object", properties: { company_number: { type: "integer", minimum: 1, maximum: 30 } }, required: ["company_number"], additionalProperties: false },
+      annotations: { readOnlyHint: false, untrustedContentHint: false },
+      execute: ({ company_number }) => {
+        if (!Number.isInteger(company_number) || company_number < 1 || company_number > 30) throw new Error("company_number는 1부터 30까지의 정수여야 합니다.");
+        openCompany(company_number - 1);
+        return { opened: true, company_number, company_name: BUSINESSES[company_number - 1].short };
+      }
+    },
+    {
+      name: "roll_board_dice",
+      title: "다음 기업 찾아보기",
+      description: "지도 경로를 따라 다음 기업으로 이동하고 해당 기업 또는 황금정부지원 뽑기를 엽니다.",
+      inputSchema: { type: "object", properties: {}, additionalProperties: false },
+      annotations: { readOnlyHint: false, untrustedContentHint: false },
+      execute: async () => {
+        const result = await performRoll();
+        if (!result) throw new Error("현재 다른 이동이나 체험이 진행 중입니다.");
+        return result;
+      }
+    }
+  ];
+  tools.forEach((tool) => { try { void Promise.resolve(context.registerTool(tool)).catch(() => {}); } catch { /* optional browser capability */ } });
+}
+
+renderBoard();
+renderMobileTrack();
+renderLegend();
+if (collectSynergies().length) saveState();
+renderState();
+initMap();
+registerWebMCP();
+
+document.querySelector("#gameStartButton").addEventListener("click", async () => {
+  try {
+    if (!document.fullscreenElement && document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
+  } catch { /* 체험 지도는 전체화면 권한이 없어도 시작할 수 있습니다. */ }
+  document.querySelector("#startScreen").classList.add("hidden");
+  window.setTimeout(() => {
+    map?.invalidateSize();
+    resetMapView();
+    rollButton.focus();
+  }, 80);
+});
+document.addEventListener("fullscreenchange", () => window.setTimeout(() => { map?.invalidateSize(); resetMapView(); }, 80));
+window.addEventListener("message", (event) => {
+  if (event.source !== minigameFrame.contentWindow) return;
+  const data = event.data;
+  if (!data || data.type !== "yeongju-enterprise-experience-complete") return;
+  const businessId = Number(data.businessId);
+  if (businessId !== activeMinigameBusinessId) return;
+  completeMinigameExperience(businessId);
+});
+document.querySelector("#minigameClose").addEventListener("click", closeMinigame);
+minigameDialog.addEventListener("cancel", (event) => { event.preventDefault(); closeMinigame(); });
+
+rollButton.addEventListener("click", () => performRoll());
+document.querySelector("#closeDialog").addEventListener("click", () => dialog.close());
+dialog.addEventListener("click", (event) => { if (event.target === dialog) dialog.close(); });
+dialog.addEventListener("cancel", (event) => { if (moving) event.preventDefault(); });
+document.querySelector("#resetButton").addEventListener("click", () => document.querySelector("#confirmDialog").showModal());
+document.querySelector("#confirmDialog").addEventListener("close", (event) => {
+  if (event.target.returnValue !== "confirm") return;
+  state = { ...defaultState, discovered: [], completed: [], recent: [] };
+  saveState();
+  renderState();
+  dice.textContent = DICE_FACES[0];
+  document.querySelector("#turnHint").textContent = "첫 탐험을 시작해요";
+  showToast("탐험 기록을 초기화했습니다.");
+});
+
+</script>
+</body>
+</html>
