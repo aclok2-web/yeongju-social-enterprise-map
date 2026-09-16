@@ -8,6 +8,7 @@
   <title>영주 사회적기업체험 지도</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%23123f35'/%3E%3Cpath d='M18 42c14-1 23-9 29-25 2 16-4 29-20 31-6 1-10-1-13-5 7-1 14-4 20-10-6 4-11 6-16 6z' fill='%23d7f75b'/%3E%3Ccircle cx='46' cy='18' r='6' fill='%23ffca57'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="vendor/maplibre/maplibre-gl.css">
   <style>
 :root {
   --ink: #17352e;
@@ -608,6 +609,8 @@ dialog::backdrop { background: rgba(8,26,22,.64); backdrop-filter: blur(5px); }
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="vendor/maplibre/maplibre-gl.js"></script>
+  <script src="vendor/maplibre-leaflet/leaflet-maplibre-gl.js"></script>
   <script>
 const CATEGORY_META = {
   food: { label: "식품", color: "#79bb41", icon: "🥗" },
