@@ -469,15 +469,80 @@ dialog::backdrop { background: rgba(8,26,22,.64); backdrop-filter: blur(5px); }
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
 
+/* Welcome explorer */
+.start-screen { overflow-y: auto; }
+.start-card { width: min(58rem, 100%); display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1fr); align-items: center; gap: clamp(1.2rem, 4vw, 3rem); padding: clamp(1.2rem, 3vw, 2.5rem); }
+.start-explorer { display: block; width: 100%; max-height: min(72dvh, 38rem); object-fit: contain; border-radius: 1.1rem; }
+.start-copy { padding: .6rem 0; }
+@media (max-width: 620px) {
+  .start-card { grid-template-columns: 1fr; gap: .75rem; margin: auto; }
+  .start-explorer { width: auto; max-width: 100%; height: clamp(9rem, 30dvh, 17rem); margin: auto; }
+  .start-card .start-logo { width: 4.5rem; height: 3rem; margin-bottom: .8rem; }
+  .start-card h1 { font-size: clamp(1.4rem, 6vw, 2rem); }
+  .start-card p { margin: .6rem 0 1rem; font-size: .88rem; }
+}
+
+/* Explorer pawn and phone camera */
+.board { position:relative; }
+.board-camera { display:contents; }
+.explorer-token { position:absolute; width:54px; height:72px; z-index:2000; pointer-events:none; transition:left .17s linear,top .17s linear; filter:drop-shadow(0 5px 3px #123f3555); }
+.explorer-token img { width:100%;height:100%;object-fit:contain;image-rendering:pixelated;transform-origin:50% 90%; }
+.explorer-token.walking img { animation:explorerWalk .26s infinite alternate ease-in-out; }
+@keyframes explorerWalk { from{transform:translateY(0) rotate(-4deg)}to{transform:translateY(-6px) rotate(4deg)} }
+.explorer-toolbar { display:none; }
+@media(max-width:800px) {
+  html,body { width:100%; height:100%; overflow:hidden; }
+  .topbar { min-height:52px;padding:7px 12px; }
+  .brand-block h1 {font-size:16px;} .brand-block p,.top-actions,.brand-mark {display:none;}
+  .app-shell {height:calc(100dvh - 52px);padding:0 8px max(8px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px;}
+  .progress-strip {flex:none;grid-template-columns:1fr auto;gap:10px;margin:0;padding:10px 12px;}
+  .synergy-summary-card {display:none;} .progress-copy {font-size:14px;} .score-card {font-size:13px;}
+  .game-layout {display:block;flex:1;min-height:0;height:auto;}
+  .synergy-panel-left,.learn-panel,.mobile-track-section {display:none;}
+  .board-wrap {height:100%;display:flex;flex-direction:column;background:#123f35;border-radius:16px;overflow:hidden;}
+  .explorer-toolbar {display:flex;flex:none;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;color:white;font-size:14px;}
+  .explorer-toolbar button {min-height:44px;padding:7px 12px;border:1px solid #8bb298;border-radius:12px;background:#fff;color:#123f35;font-weight:800;font-size:14px;}
+  .board-camera {display:block;position:relative;flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:none;touch-action:pan-x pan-y;}
+  .board-camera::-webkit-scrollbar {display:none;}
+  .board {width:1450px;height:1450px;min-height:1450px;grid-template-columns:repeat(9,minmax(0,1fr));grid-template-rows:repeat(9,minmax(0,1fr));padding:32px;gap:8px;}
+  .board-space {display:flex;padding:10px;overflow:visible;border-radius:14px;}
+  .space-number {font-size:11px;line-height:1.4;} .space-name {font-size:17px;line-height:1.35;-webkit-line-clamp:3;padding-right:0;}
+  .space-product {display:none;}
+  .board-space.current {outline:4px solid #f5c35d;outline-offset:-2px;}
+  .explorer-token {width:58px;height:78px;}
+  .map-stage {grid-row:2/9;grid-column:2/9;min-height:0;}
+  .board-wrap > .turn-panel {display:grid;grid-template-columns:1fr;gap:8px;flex:none;padding:10px 12px max(12px,env(safe-area-inset-bottom));background:white;border-top:1px solid #dce5df;}
+  .board-wrap > .turn-panel .turn-copy {display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:5px;}
+  .turn-copy small {font-size:13px;} .turn-copy strong {font-size:17px;}
+  .board-wrap > .turn-panel .dice {display:none;}
+  .roll-button {width:100%;min-height:54px;font-size:18px;border-radius:14px;}
+  .company-dialog {width:calc(100% - 12px);max-height:92dvh;}
+  .company-hero h2 {font-size:24px;} .company-body {font-size:16px;}
+  .primary-button,.secondary-button,.choice-button {min-height:48px;font-size:16px;}
+  .minigame-dialog {width:100%;height:100dvh;max-width:100%;max-height:100dvh;border-radius:0;}
+  .minigame-shell {border-radius:0;} .minigame-bar {gap:8px;padding:8px;font-size:14px;}
+  .minigame-bar span {display:none;} .minigame-close {min-height:44px;font-size:14px;flex-shrink:0;}
+}
+@media(prefers-reduced-motion:reduce){.explorer-token{transition:none}.explorer-token.walking img{animation:none}}
+
+@media(max-width:800px) {
+  .explorer-token {width:64px;height:84px;}
+  .board-space.current .space-name {position:absolute;top:30px;left:8px;right:8px;font-size:14px;line-height:1.2;-webkit-line-clamp:2;text-align:left;}
+  .board-space.current > strong:not(.space-name) {position:absolute;top:12px;left:8px;right:8px;font-size:17px;}
+  .board-space.current > small {position:absolute;top:40px;left:8px;right:8px;font-size:12px;}
+}
 </style>
 </head>
 <body>
   <section class="start-screen" id="startScreen" aria-labelledby="startTitle">
     <div class="start-card">
+      <img class="start-explorer" src="assets/yeongju-explorer.png" alt="지도를 들고 영주 탐험을 떠나는 귀여운 탐험가" width="1024" height="1536" fetchpriority="high">
+      <div class="start-copy">
       <div class="start-logo">가치<span>ON</span></div>
       <h1 id="startTitle">영주 사회적기업체험 지도</h1>
       <p>위쪽 → 오른쪽 → 아래쪽 → 왼쪽 라인에서 한 기업씩!<br>총 4곳을 체험하면 사회적기업을 찾아라! 미션이 열립니다.</p>
       <button class="game-start-button" id="gameStartButton" type="button">체험 시작</button>
+      </div>
     </div>
   </section>
   <a class="skip-link" href="#gameBoard">기업체험 지도로 바로가기</a>
@@ -1010,8 +1075,49 @@ function renderSynergies() {
   }).join("");
 }
 
+
+let explorerDirection = 'down';
+let explorerLastPosition = null;
+let explorerFollow = true;
+function directionBetweenPositions(from,to) {
+ const a=perimeterPosition(from), b=perimeterPosition(to);
+ return b.column>a.column?'right':b.column<a.column?'left':b.row>a.row?'down':b.row<a.row?'up':explorerDirection;
+}
+function followExplorer(behavior='smooth') {
+ if(window.innerWidth>800 || !explorerFollow)return;
+ const camera=document.querySelector('.board-camera');
+ const tile=board.querySelector('[data-space-index="'+state.position+'"]');
+ if(!camera||!tile)return;
+ camera.scrollTo({left:tile.offsetLeft+tile.offsetWidth/2-camera.clientWidth/2,top:tile.offsetTop+tile.offsetHeight/2-camera.clientHeight/2,behavior});
+}
+function renderExplorerPawn() {
+ const tile=board.querySelector('[data-space-index="'+state.position+'"]');if(!tile)return;
+ if(explorerLastPosition!==null && explorerLastPosition!==state.position) explorerDirection=directionBetweenPositions(explorerLastPosition,state.position);
+ explorerLastPosition=state.position;
+ let token=document.querySelector('#explorerPawn');
+ if(!token){token=document.createElement('span');token.id='explorerPawn';token.className='explorer-token';token.innerHTML='<img alt="我的 탐험가 말" draggable="false">';board.appendChild(token);}
+ token.querySelector('img').src='assets/explorer-'+explorerDirection+'.png';
+ token.querySelector('img').alt='나의 탐험가 · '+({up:'위쪽',down:'아래쪽',left:'왼쪽',right:'오른쪽'}[explorerDirection]);
+ token.classList.toggle('walking',moving);
+ token.style.left=(tile.offsetLeft+tile.offsetWidth-token.offsetWidth-8)+'px';
+ token.style.top=(tile.offsetTop+tile.offsetHeight-token.offsetHeight-5)+'px';
+ requestAnimationFrame(()=>followExplorer(moving?'auto':'smooth'));
+}
+function setupExplorerPhone() {
+ const wrap=document.querySelector('#gameBoard');
+ const camera=document.createElement('div');camera.className='board-camera';camera.setAttribute('aria-label','탐험가 주변 확대 지도 · 손가락으로 이동 가능');
+ board.before(camera);camera.appendChild(board);
+ const toolbar=document.createElement('div');toolbar.className='explorer-toolbar';toolbar.innerHTML='<span>🧭 탐험가 주변 확대 지도</span><button type="button" id="followExplorerButton">내 말 찾기</button>';wrap.prepend(toolbar);
+ document.querySelector('#followExplorerButton').onclick=()=>{explorerFollow=true;followExplorer();};
+ camera.addEventListener('pointerdown',()=>{if(!moving)explorerFollow=false;});
+ const panel=document.querySelector('.turn-panel'),home=panel.parentElement,anchor=document.createComment('turn-panel-home');panel.before(anchor);
+ function layout(){if(window.innerWidth<=800)wrap.appendChild(panel);else anchor.after(panel);map?.invalidateSize();requestAnimationFrame(renderExplorerPawn);}
+ window.addEventListener('resize',layout);layout();
+ document.querySelector('#gameStartButton').addEventListener('click',()=>setTimeout(()=>{explorerFollow=true;renderExplorerPawn();},150));
+}
+
 function renderState({ scrollMobile = false } = {}) {
-  document.querySelectorAll(".token").forEach((node) => node.remove());
+
   document.querySelectorAll(".board-space").forEach((tile) => {
     const spaceIndex = Number(tile.dataset.spaceIndex);
     const businessId = SPACES[spaceIndex]?.business?.id;
@@ -1026,14 +1132,7 @@ function renderState({ scrollMobile = false } = {}) {
     if (isCurrent && scrollMobile && window.innerWidth <= 800) tile.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
   });
 
-  const activeTile = document.querySelector(`.board-space[data-space-index="${state.position}"]`);
-  if (activeTile) {
-    const token = document.createElement("span");
-    token.className = "token";
-    token.textContent = "나";
-    token.setAttribute("aria-label", "내 말");
-    activeTile.appendChild(token);
-  }
+  renderExplorerPawn();
 
   const currentSpace = SPACES[state.position];
   const positionText = currentSpace.type === "business" ? currentSpace.business.short : currentSpace.label;
@@ -1252,17 +1351,17 @@ function nextRouteBusiness() {
 function festivalReady() { return completedLineCount() === 4; }
 
 async function performRoll() {
-  if (moving || dialog.open || minigameDialog.open) return null;
-  const next = nextRouteBusiness();
-  if (!next) { openFestivalMission(); return null; }
-  state.position = SPACES.findIndex(space => space.business?.id === next.id);
-  saveState();
-  renderState({ scrollMobile: true });
-  dice.textContent = "📍";
-  document.querySelector("#turnHint").textContent = `${completedLineCount() + 1} / 4 · ${nextExperienceLine().name} 라인 · ${next.short}`;
-  focusBusinessOnMap(next);
-  openCompany(next.id - 1);
-  return { position: state.position, business_id: next.id };
+ if(moving||dialog.open||minigameDialog.open)return null;
+ const next=nextRouteBusiness();if(!next){openFestivalMission();return null;}
+ const destination=SPACES.findIndex(space=>space.business?.id===next.id);
+ moving=true;rollButton.disabled=true;explorerFollow=true;
+ try{
+   while(state.position!==destination){state.position=(state.position+1)%SPACES.length;renderState();await wait(window.matchMedia('(prefers-reduced-motion: reduce)').matches?15:190);}
+   moving=false;renderState();saveState();
+   document.querySelector('#turnHint').textContent=(completedLineCount()+1)+' / 4 · '+nextExperienceLine().name+' 라인';
+   focusBusinessOnMap(next);await wait(350);openCompany(next.id-1);
+   return {position:state.position,business_id:next.id};
+ }finally{moving=false;rollButton.disabled=false;renderExplorerPawn();}
 }
 
 function showToast(message) {
@@ -1423,6 +1522,7 @@ function registerWebMCP() {
 }
 
 renderBoard();
+setupExplorerPhone();
 renderMobileTrack();
 renderLegend();
 if (collectSynergies().length) saveState();
