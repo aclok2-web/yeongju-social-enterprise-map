@@ -29,4 +29,245 @@
   function home(){clearInterval(timer);clearMode();ended=true;$('#result').classList.remove('open');$('#game').classList.remove('active');$('#home').classList.add('active')}
   const api={$, $$, S, cfg, ui, success, fail, advance, restart, button, shuffle, later, every, beep, burst, sync, finish};
   $('#startBtn').onclick=start;$('#retryBtn').onclick=start;$('#homeBtn').onclick=home;$('#resultHome').onclick=home;
-})({"no":"10","file":"10-dreamwood-premium.html","company":"꿈꾸는목공학교 사회적협동조합","title":"꿈꾸는 원목 공방","sub":"순서와 구조를 익히는 목공 조립 체험","emoji":"🪵","mode":"woodcraft","a":"#95602e","b":"#d7a457","deep":"#432c18","duration":115,"products":["원목 소품","목공 체험","업사이클 가구"],"value":"목공교육과 자원순환을 통해 배움의 기회와 지역의 새로운 일거리를 만듭니다."},function woodcraft(G){const{$,S,ui,success,fail,advance,button,shuffle}=G;const jobs=[{n:'원목 연필꽂이',steps:['바닥판','옆판','칸막이','마감오일'],icon:'▣'},{n:'작은 협탁',steps:['상판','앞다리','뒷다리','수평확인'],icon:'▤'},{n:'업사이클 선반',steps:['재생목재','프레임','선반판','안전마감'],icon:'▥'}],j=jobs[S.round];let k=0;ui(j.n,'튼튼한 구조가 되도록 작업 순서를 맞추세요.',`<div class="woodshop"><div class="blueprint"><span>${j.icon}</span><b id="build">설계도 확인</b><div class="build-progress" id="buildProgress"></div></div><div><div class="piece-rack" id="rack"></div><p class="status">다음 작업: <b id="next">${j.steps[0]}</b></p></div></div>`);shuffle(j.steps).forEach(x=>{const b=button(x,'wood-piece');b.onclick=()=>{if(x!==j.steps[k]){fail('조립 순서를 다시 생각해 보세요.');return}b.disabled=true;k++;$('#build').textContent='🔨 '.repeat(k)+j.n;$('#buildProgress').style.width=(k/j.steps.length*100)+'%';if(k===j.steps.length){success(720,'튼튼한 목공 완성!');advance(`${j.n} 제작 완료`)}else $('#next').textContent=j.steps[k]};$('#rack').appendChild(b)})});</script><script src="experience-bridge.js" data-business-id="10"></script></body></html>
+})({"no":"10","file":"10-dreamwood-premium.html","company":"꿈꾸는목공학교 사회적협동조합","title":"꿈꾸는 원목 공방","sub":"순서와 구조를 익히는 목공 조립 체험","emoji":"🪵","mode":"woodcraft","a":"#95602e","b":"#d7a457","deep":"#432c18","duration":180,"products":["원목 소품","목공 체험","업사이클 가구"],"value":"목공교육과 자원순환을 통해 배움의 기회와 지역의 새로운 일거리를 만듭니다."},function woodcraft(G){
+  const{$,S,ui,success,fail,advance,shuffle,later,beep}=G;
+  const jobs=[
+    {n:'원목 연필꽂이',icon:'▣',steps:[
+      {n:'바닥판',e:'🟫',h:'모든 부품을 받쳐 줄 바닥을 놓아요.'},
+      {n:'옆판',e:'📐',h:'양쪽 벽을 세워 모양을 잡아요.'},
+      {n:'칸막이',e:'➗',h:'연필을 나눠 담을 칸을 만들어요.'},
+      {n:'마감오일',e:'🖌️',h:'표면을 보호하고 매끄럽게 마감해요.'}
+    ]},
+    {n:'작은 협탁',icon:'▤',steps:[
+      {n:'앞다리',e:'🪵',h:'앞쪽 다리 두 개를 먼저 고정해요.'},
+      {n:'뒷다리',e:'🪵',h:'뒤쪽 다리를 맞춰 구조를 세워요.'},
+      {n:'상판',e:'▰',h:'다리 위에 상판을 단단히 고정해요.'},
+      {n:'수평확인',e:'📏',h:'흔들림 없이 반듯한지 확인해요.'}
+    ]},
+    {n:'업사이클 선반',icon:'▥',steps:[
+      {n:'재생목재',e:'♻️',h:'다시 쓸 수 있는 목재를 골라요.'},
+      {n:'프레임',e:'🖼️',h:'선반의 바깥 구조를 먼저 만들어요.'},
+      {n:'선반판',e:'🟫',h:'물건을 올릴 판을 안쪽에 끼워요.'},
+      {n:'안전마감',e:'🧤',h:'모서리와 표면을 안전하게 다듬어요.'}
+    ]}
+  ];
+  const j=jobs[S.round];
+  const scenes=[
+    `<div class="craft-product pencil-product" id="craftProduct" aria-label="조립 중인 원목 연필꽂이">
+       <i class="wood-part pencil-base" data-part="1"></i>
+       <i class="wood-part pencil-side left" data-part="2"></i><i class="wood-part pencil-side right" data-part="2"></i>
+       <i class="wood-part pencil-divider" data-part="3"></i>
+       <i class="finish-sheen" data-part="4"></i><span class="pencil-fill" data-part="4">✏️ 🖊️</span>
+     </div>`,
+    `<div class="craft-product table-product" id="craftProduct" aria-label="조립 중인 작은 협탁">
+       <i class="wood-part table-leg front-left" data-part="1"></i><i class="wood-part table-leg front-right" data-part="1"></i>
+       <i class="wood-part table-leg back-left" data-part="2"></i><i class="wood-part table-leg back-right" data-part="2"></i>
+       <i class="wood-part table-top" data-part="3"></i>
+       <span class="level-tool" data-part="4">📏 <b>수평 OK!</b></span>
+     </div>`,
+    `<div class="craft-product shelf-product" id="craftProduct" aria-label="조립 중인 업사이클 선반">
+       <i class="wood-part reclaimed-panel" data-part="1"></i>
+       <i class="wood-part shelf-frame top" data-part="2"></i><i class="wood-part shelf-frame bottom" data-part="2"></i>
+       <i class="wood-part shelf-frame left" data-part="2"></i><i class="wood-part shelf-frame right" data-part="2"></i>
+       <i class="wood-part shelf-board one" data-part="3"></i><i class="wood-part shelf-board two" data-part="3"></i>
+       <i class="finish-sheen" data-part="4"></i><span class="safety-stamp" data-part="4">✓ 안전마감</span>
+     </div>`
+  ];
+  let k=0,locked=false;
+
+  ui(
+    `${S.round+1}번째 제품 · ${j.n}`,
+    '재료와 공구를 선택하면 작업대에서 제품이 한 단계씩 실제 모양으로 조립됩니다.',
+    `<div class="clarity-banner"><b>🎯 목표</b><span>${j.steps.length}개의 작업을 올바른 순서로 선택해 <strong>${j.n}</strong>을 완성하세요.</span></div>
+     <div class="craft-layout">
+       <section class="craft-stage" aria-labelledby="workbenchTitle">
+         <div class="workshop-wall"><span>꿈꾸는목공학교</span><i>🪚</i><i>🔨</i><i>📐</i></div>
+         <div class="stage-label" id="workbenchTitle"><span class="live-dot"></span> 나의 작업대 · 직접 조립 중</div>
+         <div class="product-zone">${scenes[S.round]}<div class="hammer-tool" id="hammerTool">🔨</div><div class="craft-action" id="craftAction">첫 번째 재료를 선택해 주세요</div></div>
+         <div class="workbench"><span></span><span></span><b>WOOD WORKBENCH</b></div>
+         <div class="build-info"><strong id="build">0 / ${j.steps.length} 작업 완료</strong><div class="build-track" aria-label="제작 진행률"><i id="buildProgress"></i></div></div>
+       </section>
+       <div class="work-order">
+         <h3>📋 ${j.n} 제작 순서</h3>
+         <p class="order-help">현재 빛나는 단계에 맞는 재료·공구를 골라 주세요.</p>
+         <ol class="step-list" id="workSteps">
+           ${j.steps.map((x,i)=>`<li data-step="${i}"><b>${i+1}</b><span><strong>${x.n}</strong><small>${x.h}</small></span></li>`).join('')}
+         </ol>
+       </div>
+     </div>
+     <div class="card-workspace material-workspace">
+       <div class="now-card" id="coach" aria-live="polite"></div>
+       <div class="tray-title"><h3>🧰 재료·공구 보관함</h3><p class="card-help">필요한 부품을 누르면 작업대로 이동해 조립됩니다.</p></div>
+       <div class="piece-rack clear-rack" id="rack"></div>
+     </div>`
+  );
+
+  const stepEls=[...document.querySelectorAll('#workSteps li')];
+  const renderState=()=>{
+    stepEls.forEach((li,i)=>li.className=i<k?'done':i===k?'current':'');
+    $('#build').textContent=`${k} / ${j.steps.length} 작업 완료`;
+    $('#buildProgress').style.width=`${k/j.steps.length*100}%`;
+    if(k<j.steps.length){
+      const next=j.steps[k];
+      $('#coach').innerHTML=`<span>지금 만들 차례 ${k+1}/${j.steps.length}</span><b>${next.e} ‘${next.n}’을 작업대에 올리세요</b><small>${next.h}</small>`;
+    }else{
+      $('#coach').innerHTML=`<span>제작 완료</span><b>✅ ${j.n} 완성!</b><small>다음 제품으로 이동합니다.</small>`;
+    }
+  };
+
+  const makeChips=()=>{
+    const stage=$('.craft-stage');
+    for(let i=0;i<12;i++){
+      const chip=document.createElement('i');
+      chip.className='wood-chip';
+      chip.style.setProperty('--chip-x',`${Math.random()*150-75}px`);
+      chip.style.setProperty('--chip-y',`${Math.random()*-75-15}px`);
+      chip.style.left=`${45+Math.random()*10}%`;
+      chip.style.top=`${48+Math.random()*10}%`;
+      stage.appendChild(chip);
+      later(()=>chip.remove(),800);
+    }
+  };
+
+  const assemblePart=(source,stepNo,label,done)=>{
+    const from=source.getBoundingClientRect(),to=$('#craftProduct').getBoundingClientRect();
+    const flyer=document.createElement('div');
+    flyer.className='flying-material';
+    flyer.innerHTML=`<span>${j.steps[stepNo-1].e}</span><b>${label}</b>`;
+    flyer.style.left=`${from.left+from.width/2}px`;
+    flyer.style.top=`${from.top+from.height/2}px`;
+    document.body.appendChild(flyer);
+    requestAnimationFrame(()=>{
+      flyer.style.left=`${to.left+to.width/2}px`;
+      flyer.style.top=`${to.top+to.height/2}px`;
+      flyer.style.transform='translate(-50%,-50%) scale(.42) rotate(-10deg)';
+      flyer.style.opacity='.25';
+    });
+    $('#craftAction').textContent=`${label} 조립 중…`;
+    $('#craftProduct').classList.add('working');
+    later(()=>{
+      flyer.remove();
+      document.querySelectorAll(`[data-part="${stepNo}"]`).forEach(el=>el.classList.add('done'));
+      $('#hammerTool').classList.add('active');
+      makeChips();
+      beep(stepNo===4?880:330+stepNo*70,.11);
+      later(()=>{
+        $('#hammerTool').classList.remove('active');
+        $('#craftProduct').classList.remove('working');
+        $('#craftAction').textContent=stepNo===j.steps.length?'제품이 완성되었습니다!':'부품이 단단히 조립되었습니다';
+        done();
+      },380);
+    },500);
+  };
+
+  shuffle(j.steps).forEach(step=>{
+    const b=document.createElement('button');
+    b.type='button';
+    b.className='wood-piece clear-piece material-card';
+    b.innerHTML=`<span>${step.e}</span><b>${step.n}</b><small>${step.h}</small>`;
+    b.setAttribute('aria-label',`${step.n}: ${step.h}`);
+    b.onclick=()=>{
+      if(locked)return;
+      const expected=j.steps[k];
+      if(step!==expected){
+        b.classList.remove('wrong');
+        void b.offsetWidth;
+        b.classList.add('wrong');
+        fail(`지금은 ${k+1}단계 ‘${expected.n}’을 먼저 선택하세요.`);
+        later(()=>b.classList.remove('wrong'),550);
+        return;
+      }
+      locked=true;
+      b.disabled=true;
+      b.classList.add('correct');
+      b.innerHTML=`<span>🛠️</span><b>${step.n}</b><small>작업대로 이동 중</small>`;
+      const stepNo=k+1;
+      assemblePart(b,stepNo,step.n,()=>{
+        k++;
+        b.innerHTML=`<span>✅</span><b>${step.n}</b><small>${k}단계 조립 완료</small>`;
+        renderState();
+        locked=false;
+        if(k===j.steps.length){
+          $('#craftProduct').classList.add('complete');
+          success(920,`${j.n}을 직접 완성했어요!`);
+          later(()=>advance(`${j.n} 제작 완료`),1250);
+        }else{
+          success(150,`${k}단계 조립 완료! 다음 부품을 준비하세요.`);
+        }
+      });
+    };
+    $('#rack').appendChild(b);
+  });
+  renderState();
+});
+</script>
+<script>
+  document.head.insertAdjacentHTML('beforeend',`<style>
+    .quick-guide{margin-top:16px;padding:20px;border:3px solid #fff;border-radius:24px;background:rgba(255,255,255,.88);box-shadow:0 12px 32px color-mix(in srgb,var(--deep) 10%,transparent)}
+    .quick-guide h2{margin:0 0 5px;color:var(--deep);font-size:22px;letter-spacing:-.04em}
+    .quick-guide>p{margin:0 0 14px;color:var(--muted);font-size:12px}
+    .guide-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .guide-item{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;align-items:center;padding:13px;border-radius:16px;background:color-mix(in srgb,var(--a) 8%,white)}
+    .guide-item>span{grid-row:1/3;width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:var(--deep);color:white;font-weight:950}
+    .guide-item b{color:var(--deep);font-size:12px}.guide-item small{color:var(--muted);line-height:1.45}
+    .guide-tip{margin-top:12px!important;padding:10px 12px;border-radius:12px;background:#fff4d8;color:#6c512a!important;font-weight:800}
+    .clarity-banner{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:12px 14px;border:2px solid color-mix(in srgb,var(--a) 25%,white);border-radius:15px;background:#fffaf0;font-size:12px}
+    .clarity-banner b{padding:6px 9px;border-radius:9px;background:var(--deep);color:white;white-space:nowrap}.clarity-banner strong{color:var(--a)}
+    .craft-layout{display:grid;grid-template-columns:1.25fr .75fr;gap:14px;align-items:stretch;max-width:940px;margin:0 auto 14px}
+    .craft-stage{position:relative;min-height:440px;overflow:hidden;border:3px solid #c99b62;border-radius:22px;background:linear-gradient(#e8d2ad 0 18%,#f5e9d3 18% 82%,#8a5b35 82%);box-shadow:inset 0 0 35px rgba(86,49,21,.12),0 9px 22px rgba(67,44,24,.13)}
+    .workshop-wall{position:absolute;inset:0 0 auto;height:76px;display:flex;align-items:center;justify-content:flex-end;gap:15px;padding:12px 20px;border-bottom:5px solid #b68451;background:repeating-linear-gradient(90deg,#d8b27b 0 48px,#cda56c 48px 51px);color:#5d391e}
+    .workshop-wall span{margin-right:auto;padding:7px 10px;border:2px solid #7d512c;border-radius:8px;background:#f5e1bd;font-size:11px;font-weight:950;transform:rotate(-1deg)}.workshop-wall i{font-size:27px;font-style:normal;filter:drop-shadow(0 3px 1px rgba(0,0,0,.18))}
+    .stage-label{position:absolute;z-index:4;left:14px;top:87px;padding:7px 10px;border-radius:99px;background:rgba(67,44,24,.9);color:white;font-size:9px;font-weight:950}.live-dot{display:inline-block;width:7px;height:7px;margin-right:5px;border-radius:50%;background:#75e28d;box-shadow:0 0 0 4px rgba(117,226,141,.18)}
+    .product-zone{position:absolute;z-index:2;inset:108px 25px 91px;display:grid;place-items:center}.craft-product{position:relative;width:300px;height:225px;filter:drop-shadow(0 17px 11px rgba(67,44,24,.18));transition:.25s}.craft-product.working{transform:scale(1.03)}.craft-product.complete{animation:productComplete .7s ease both}
+    .craft-product [data-part]{opacity:.12;transform:translateY(-16px) scale(.88);transition:opacity .28s ease,transform .42s cubic-bezier(.2,1.4,.4,1),filter .3s}.craft-product [data-part].done{opacity:1;transform:none;filter:saturate(1.05)}
+    .wood-part{position:absolute;display:block;border:3px solid #68401f;border-radius:5px;background:repeating-linear-gradient(8deg,#b9773d 0 7px,#c98b4d 8px 13px,#a96532 14px 16px);box-shadow:inset 0 0 0 2px rgba(255,255,255,.16),0 5px 0 #5c351b}
+    .pencil-base{left:43px;top:168px;width:214px;height:32px;transform-origin:center bottom!important}.pencil-side{top:57px;width:35px;height:126px}.pencil-side.left{left:34px}.pencil-side.right{right:34px}.pencil-divider{left:140px;top:77px;width:20px;height:108px}.pencil-fill{position:absolute;left:70px;right:70px;top:19px;text-align:center;font-size:39px;letter-spacing:16px;white-space:nowrap}.finish-sheen{position:absolute;inset:24px 25px 18px;border-radius:18px;background:linear-gradient(115deg,transparent 25%,rgba(255,239,165,.72) 42%,transparent 58%);mix-blend-mode:screen;pointer-events:none}
+    .table-leg{top:101px;width:31px;height:116px;border-radius:2px 2px 8px 8px}.table-leg.front-left{left:49px}.table-leg.front-right{right:49px}.table-leg.back-left{left:83px;top:94px;background-color:#965d32}.table-leg.back-right{right:83px;top:94px;background-color:#965d32}.table-top{left:20px;top:61px;width:260px;height:48px;border-radius:9px;transform-origin:center bottom!important}.level-tool{position:absolute;z-index:5;left:74px;top:32px;width:152px;padding:7px;border:3px solid #db9d28;border-radius:8px;background:#f4c94f;text-align:center;font-size:22px;box-shadow:0 5px 0 #9b6c19}.level-tool b{display:block;color:#58400f;font-size:9px}
+    .reclaimed-panel{left:52px;top:28px;width:196px;height:183px;background:repeating-linear-gradient(90deg,#936039 0 28px,#b47b48 29px 55px,#7b5134 56px 83px)}.shelf-frame{z-index:2}.shelf-frame.top,.shelf-frame.bottom{left:31px;width:238px;height:24px}.shelf-frame.top{top:16px}.shelf-frame.bottom{top:205px}.shelf-frame.left,.shelf-frame.right{top:20px;width:25px;height:201px}.shelf-frame.left{left:27px}.shelf-frame.right{right:27px}.shelf-board{z-index:3;left:42px;width:216px;height:22px}.shelf-board.one{top:88px}.shelf-board.two{top:150px}.safety-stamp{position:absolute;z-index:6;right:12px;bottom:4px;padding:7px 10px;border:3px solid #327148;border-radius:8px;background:#e2f3e6;color:#28633d;font-size:11px;font-weight:950;transform:rotate(-6deg)!important}
+    .hammer-tool{position:absolute;z-index:8;right:3%;top:3%;font-size:48px;opacity:0;transform:rotate(28deg);transform-origin:90% 90%;filter:drop-shadow(0 5px 2px rgba(0,0,0,.2))}.hammer-tool.active{opacity:1;animation:hammerHit .18s ease 3}.craft-action{position:absolute;z-index:7;left:50%;bottom:-4px;transform:translateX(-50%);min-width:190px;padding:7px 12px;border:2px solid #fff;border-radius:99px;background:rgba(67,44,24,.9);color:#fff;text-align:center;font-size:9px;font-weight:900;box-shadow:0 5px 15px rgba(0,0,0,.15)}
+    .workbench{position:absolute;z-index:1;left:4%;right:4%;bottom:31px;height:61px;border:4px solid #4c2d19;border-radius:9px;background:repeating-linear-gradient(3deg,#8d552d 0 16px,#a66b39 17px 31px);box-shadow:0 12px 0 #3e281b}.workbench span{position:absolute;top:57px;width:27px;height:48px;background:#55351f}.workbench span:first-child{left:10%}.workbench span:nth-child(2){right:10%}.workbench b{position:absolute;right:8px;bottom:7px;color:rgba(255,255,255,.52);font-size:8px;letter-spacing:.08em}
+    .build-info{position:absolute;z-index:5;left:12px;right:12px;bottom:7px;display:flex;align-items:center;gap:10px;color:#fff;font-size:9px}.build-info strong{white-space:nowrap}.build-info .build-track{flex:1;width:auto;margin:0;background:rgba(255,255,255,.25)}
+    .order-help{margin:-2px 0 10px;color:var(--muted);font-size:9px;line-height:1.45}.material-workspace{max-width:940px;margin:0 auto;background:linear-gradient(#fff,#fbf5e9)}.material-workspace .now-card{margin-bottom:12px}.tray-title{display:flex;align-items:end;justify-content:space-between;gap:10px}.tray-title h3{margin:0 0 8px}.tray-title .card-help{margin:0 0 8px}
+    .material-workspace .clear-rack{grid-template-columns:repeat(4,1fr)}.material-card{position:relative;overflow:hidden;background:repeating-linear-gradient(8deg,#f8e7c8 0 11px,#f3dcb7 12px 22px);border-color:#b9864f;box-shadow:0 5px 0 #8b6036}.material-card:before{content:"";position:absolute;inset:6px;border:1px dashed rgba(105,68,33,.24);border-radius:8px;pointer-events:none}.material-card:hover{transform:translateY(-3px);box-shadow:0 8px 0 #8b6036}.material-card.correct{box-shadow:0 2px 0 #4f875c;transform:translateY(3px)}
+    .flying-material{position:fixed;z-index:1000;width:108px;padding:10px;border:3px solid #8c5b2d;border-radius:14px;background:repeating-linear-gradient(8deg,#f4d5a4 0 10px,#e7be84 11px 20px);color:#4d3018;text-align:center;pointer-events:none;transform:translate(-50%,-50%);box-shadow:0 15px 30px rgba(0,0,0,.28);transition:left .5s cubic-bezier(.3,.7,.3,1),top .5s cubic-bezier(.3,.7,.3,1),transform .5s,opacity .5s}.flying-material span,.flying-material b{display:block}.flying-material span{font-size:26px}.flying-material b{font-size:10px}
+    .wood-chip{position:absolute;z-index:9;width:8px;height:4px;border-radius:50%;background:#d39a55;pointer-events:none;animation:chipBurst .75s ease-out forwards}
+    @keyframes hammerHit{50%{transform:rotate(-32deg) translate(-8px,15px)}}@keyframes chipBurst{to{transform:translate(var(--chip-x),var(--chip-y)) rotate(300deg);opacity:0}}@keyframes productComplete{45%{transform:scale(1.1);filter:drop-shadow(0 0 22px #ffd56a)}100%{transform:scale(1);filter:drop-shadow(0 17px 11px rgba(67,44,24,.18))}}
+    .clarity-shop{align-items:start;margin:8px auto;max-width:920px;grid-template-columns:.9fr 1.1fr}
+    .work-order,.card-workspace{padding:14px;border:2px solid var(--line);border-radius:18px;background:#fff}
+    .work-order h3,.card-workspace h3{margin:13px 0 7px;color:var(--deep);font-size:15px}
+    .clear-blueprint{height:190px;border-style:solid}.clear-blueprint span{font-size:76px}.clear-blueprint small{margin-top:5px;color:var(--muted);font-size:11px}
+    .build-track{width:80%;height:12px;margin-top:12px;overflow:hidden;border-radius:99px;background:#dce2df}
+    .build-track i{display:block;width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--b),var(--a));transition:width .28s ease}
+    .step-list{display:grid;gap:7px;margin:0;padding:0;list-style:none}
+    .step-list li{display:grid;grid-template-columns:31px 1fr;gap:9px;align-items:center;padding:9px;border:2px solid #e5e2dc;border-radius:12px;background:#f7f5f0;transition:.2s}
+    .step-list li>b{width:29px;height:29px;display:grid;place-items:center;border-radius:50%;background:#ddd6ca;color:#685a49}
+    .step-list li span strong,.step-list li span small{display:block}.step-list li span strong{font-size:12px}.step-list li span small{margin-top:2px;color:var(--muted);font-size:9px;line-height:1.35}
+    .step-list li.current{border-color:var(--a);background:#fff5df;box-shadow:0 0 0 3px color-mix(in srgb,var(--a) 10%,transparent)}
+    .step-list li.current>b{background:var(--a);color:white}.step-list li.done{border-color:#a8d0b3;background:#edf8f0}.step-list li.done>b{background:#3b8a56;color:white}.step-list li.done strong{text-decoration:line-through;color:#49805a}
+    .now-card{min-height:96px;padding:14px;border-radius:16px;background:linear-gradient(135deg,var(--deep),var(--a));color:white;box-shadow:0 9px 20px color-mix(in srgb,var(--deep) 22%,transparent)}
+    .now-card span,.now-card b,.now-card small{display:block}.now-card span{font-size:9px;font-weight:900;opacity:.72}.now-card b{margin:5px 0;font-size:18px}.now-card small{line-height:1.45;opacity:.85}
+    .card-help{margin:0 0 10px;color:var(--muted);font-size:10px}
+    .clear-rack{grid-template-columns:1fr 1fr}.clear-piece{min-height:105px;padding:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+    .clear-piece>span{font-size:28px}.clear-piece>b,.clear-piece>small{display:block}.clear-piece>small{color:#766451;font-size:9px;line-height:1.35;font-weight:700}
+    .clear-piece.correct{border-color:#62a975;background:#e8f6ec;color:#28683c}.clear-piece.correct:disabled{opacity:1}.clear-piece.wrong{border-color:#c85050;background:#fff0f0;animation:wrongShake .32s ease}
+    @keyframes wrongShake{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+    @media(max-width:760px){.guide-grid{grid-template-columns:1fr}.clarity-banner{align-items:flex-start}.craft-layout{grid-template-columns:1fr}.craft-stage{min-height:410px}.material-workspace .clear-rack{grid-template-columns:1fr 1fr}.tray-title{display:block}.workshop-wall i{font-size:22px}.product-zone{left:10px;right:10px}}
+    @media(max-width:420px){.material-workspace .clear-rack{grid-template-columns:1fr 1fr}.clear-piece{min-height:92px}.quick-guide{padding:15px}.craft-stage{min-height:390px}.craft-product{transform:scale(.86)}.craft-product.working{transform:scale(.9)}.workshop-wall{gap:8px;padding:10px}.workshop-wall span{font-size:9px}.stage-label{top:82px}.product-zone{inset:98px 0 84px}.step-list li span small{font-size:10px}}
+  </style>`);
+  const values=document.querySelector('.values');
+  values.insertAdjacentHTML('afterend',`<section class="quick-guide" aria-labelledby="guideTitle">
+    <h2 id="guideTitle">게임 방법</h2>
+    <p>목공의 기본 순서를 따라 세 가지 원목 제품을 완성하는 게임입니다.</p>
+    <div class="guide-grid">
+      <div class="guide-item"><span>1</span><b>순서표 확인</b><small>왼쪽의 1~4번 작업 순서를 읽어요.</small></div>
+      <div class="guide-item"><span>2</span><b>카드 선택</b><small>현재 단계와 같은 작업 카드를 눌러요.</small></div>
+      <div class="guide-item"><span>3</span><b>제품 완성</b><small>연필꽂이·협탁·선반을 모두 만들면 성공!</small></div>
+    </div>
+    <p class="guide-tip">💡 순서를 외울 필요가 없어요. 게임 중 작업 순서표를 보고 그대로 선택하면 됩니다.</p>
+  </section>`);
+  document.querySelector('#startBtn').textContent='게임 시작하기 →';
+  document.querySelector('.hud span:nth-child(1)').childNodes[0].textContent='연속 성공 ';
+  document.querySelector('.hud span:nth-child(2)').childNodes[0].textContent='점수 ';
+  document.querySelector('.hud span:nth-child(3)').childNodes[0].textContent='남은 시간 ';
+</script>
+<script src="experience-bridge.js" data-business-id="2"></script></body></html>

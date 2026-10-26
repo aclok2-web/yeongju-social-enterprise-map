@@ -13,6 +13,7 @@
   function findResult() {
     const candidates = [
       document.querySelector(".result.open"),
+      document.querySelector("#result.active"),
       document.querySelector("#resultModal.open"),
       document.querySelector("[id*='result'][class*='open']")
     ];
