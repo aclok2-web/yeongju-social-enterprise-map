@@ -535,6 +535,8 @@ dialog::backdrop { background: rgba(8,26,22,.64); backdrop-filter: blur(5px); }
 }
 </style>
   <link rel="stylesheet" href="assets/board-updates.css">
+  <link rel="stylesheet" href="assets/dice-roll.css">
+  <script src="assets/dice-roll.js"></script>
 </head>
 <body>
   <section class="start-screen" id="startScreen" aria-labelledby="startTitle">
@@ -1378,12 +1380,7 @@ async function performRoll() {
   const steps = diceValues[0] + diceValues[1];
   try {
     dice.classList.add('rolling');
-    if (!reducedMotion) {
-      for (let tick = 0; tick < 8; tick++) {
-        dice.textContent = DICE_FACES[tick % 6] + ' ' + DICE_FACES[(tick + 3) % 6];
-        await wait(65);
-      }
-    }
+    await window.YeongjuDice.show(diceValues);
     dice.classList.remove('rolling');
     dice.textContent = diceValues.map(value => DICE_FACES[value - 1]).join(' ');
     dice.setAttribute('aria-label', '주사위 ' + diceValues[0] + '과 ' + diceValues[1] + ', 합계 ' + steps);
@@ -1407,6 +1404,7 @@ async function performRoll() {
     return { position: state.position, dice: steps, dice_values: diceValues, business_id: space.business?.id ?? null };
   } finally {
     moving = false;
+    window.YeongjuDice.close();
     dice.classList.remove('rolling');
     renderState();
   }
