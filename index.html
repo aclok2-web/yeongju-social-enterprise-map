@@ -272,7 +272,7 @@ button { color: inherit; }
 }
 .turn-copy small { display: block; color: var(--muted); font-size: .72rem; }
 .turn-copy strong { display: block; margin-top: .1rem; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: .92rem; }
-.dice { display: grid; place-items: center; width: 3rem; height: 3rem; border: 2px solid #d7e0da; border-radius: .72rem; background: #f8faf7; font-size: 2.15rem; line-height: 1; box-shadow: inset 0 -3px 0 rgba(18,63,53,.05); }
+.dice { display: grid; place-items: center; width: 6.5rem; white-space: nowrap; height: 3rem; border: 2px solid #d7e0da; border-radius: .72rem; background: #f8faf7; font-size: 2.15rem; line-height: 1; box-shadow: inset 0 -3px 0 rgba(18,63,53,.05); }
 .dice.rolling { animation: diceRoll .22s linear infinite; }
 @keyframes diceRoll { 50% { transform: rotate(8deg) scale(1.08); } }
 .roll-button { min-height: 3rem; padding: .75rem 1.2rem; border: 0; border-radius: .78rem; color: #123f35; background: var(--lime); font-weight: 900; cursor: pointer; box-shadow: 0 6px 0 #aac52f; transition: transform .12s ease, box-shadow .12s ease; }
@@ -316,6 +316,7 @@ button { color: inherit; }
 .synergy-unlock { margin: .8rem 0 0; padding: .85rem; border: 1px solid #c9dc83; border-radius: .8rem; background: #f6fbdc; }
 .synergy-unlock strong { display: block; color: #315c38; }
 .synergy-unlock p { margin: .25rem 0 0; color: #526556; font-size: .8rem; line-height: 1.45; }
+.chance-companies { display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.6rem; }
 .support-draw { display: grid; place-items: center; min-height: 17rem; padding: 1rem; border: 2px dashed #e0b33b; border-radius: 1rem; background: radial-gradient(circle, #fffbe8, #fff3bd); text-align: center; }
 .support-machine { display: grid; place-items: center; width: 7rem; height: 7rem; border: 6px solid white; border-radius: 50%; background: linear-gradient(145deg, #ffd85e, #f2a91c); font-size: 3.5rem; box-shadow: 0 12px 25px rgba(154,104,10,.22); }
 .support-machine.drawing { animation: supportSpin .18s linear infinite; }
@@ -511,10 +512,11 @@ dialog::backdrop { background: rgba(8,26,22,.64); backdrop-filter: blur(5px); }
   .board-space.current {outline:4px solid #f5c35d;outline-offset:-2px;}
   .explorer-token {width:58px;height:78px;}
   .map-stage {grid-row:2/9;grid-column:2/9;min-height:0;}
-  .board-wrap > .turn-panel {display:grid;grid-template-columns:1fr;gap:8px;flex:none;padding:10px 12px max(12px,env(safe-area-inset-bottom));background:white;border-top:1px solid #dce5df;}
+  .board-wrap > .turn-panel {display:grid;grid-template-columns:1fr auto;gap:8px;flex:none;padding:10px 12px max(12px,env(safe-area-inset-bottom));background:white;border-top:1px solid #dce5df;}
   .board-wrap > .turn-panel .turn-copy {display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:5px;}
   .turn-copy small {font-size:13px;} .turn-copy strong {font-size:17px;}
-  .board-wrap > .turn-panel .dice {display:none;}
+  .board-wrap > .turn-panel .dice {display:grid;grid-column:2;grid-row:1;}
+  .board-wrap > .turn-panel .roll-button {grid-column:1 / -1;}
   .roll-button {width:100%;min-height:54px;font-size:18px;border-radius:14px;}
   .company-dialog {width:calc(100% - 12px);max-height:92dvh;}
   .company-hero h2 {font-size:24px;} .company-body {font-size:16px;}
@@ -532,6 +534,7 @@ dialog::backdrop { background: rgba(8,26,22,.64); backdrop-filter: blur(5px); }
   .board-space.current > small {position:absolute;top:40px;left:8px;right:8px;font-size:12px;}
 }
 </style>
+  <link rel="stylesheet" href="assets/board-updates.css">
 </head>
 <body>
   <section class="start-screen" id="startScreen" aria-labelledby="startTitle">
@@ -540,8 +543,10 @@ dialog::backdrop { background: rgba(8,26,22,.64); backdrop-filter: blur(5px); }
       <div class="start-copy">
       <div class="start-logo">가치<span>ON</span></div>
       <h1 id="startTitle">영주 사회적기업체험 지도</h1>
-      <p>위쪽 → 오른쪽 → 아래쪽 → 왼쪽 라인에서 한 기업씩!<br>총 4곳을 체험하면 사회적기업을 찾아라! 미션이 열립니다.</p>
+      <p class="start-intro">경상북도 영주에 있는 사회적기업을 직접 체험하는 지도예요.</p>
+      <p>주사위 두 개로 이동해 영주 기업의 일과 사회적가치를 미니게임으로 만나보세요.<br>영주시사회적경제지원센터에서는 기업을 골라 컨설팅할 수 있어요.<br>협업 사회적가치 5개를 모으면 성공! 완료한 체험은 언제든 다시 할 수 있어요.</p>
       <button class="game-start-button" id="gameStartButton" type="button">체험 시작</button>
+      <small class="start-music-note">시작하면 아케이드 음악이 재생돼요. 음악 버튼으로 끌 수 있어요.</small>
       </div>
     </div>
   </section>
@@ -553,6 +558,10 @@ dialog::backdrop { background: rgba(8,26,22,.64); backdrop-filter: blur(5px); }
         <h1>영주 사회적기업체험 지도</h1>
         <p>기업 위치를 찾아보고 사회적가치를 체험해 보세요.</p>
       </div>
+    </div>
+    <div class="map-actions">
+      <button class="music-button" id="musicButton" type="button" aria-pressed="true" aria-label="배경음악 끄기">♫ 음악 켬</button>
+      <button class="replay-button" id="replayButton" type="button">체험 목록</button>
     </div>
     <div class="top-actions">
       <span class="guide-button">상품안내서 30개 기업 반영</span>
@@ -567,7 +576,7 @@ dialog::backdrop { background: rgba(8,26,22,.64); backdrop-filter: blur(5px); }
         <span><small>협업 사회적가치</small><strong><span id="synergyTopCount">0</span> / 30 수집</strong></span>
       </div>
       <div class="progress-track-wrap">
-        <div class="progress-copy"><span>라인별 체험</span><strong><span id="completedCount">0</span> / 4</strong></div>
+        <div class="progress-copy"><span>클리어 목표 · 사회적가치</span><strong><span id="completedCount">0</span> / 5</strong></div>
         <div class="progress-track" aria-hidden="true"><span id="progressBar"></span></div>
       </div>
       <div class="score-card"><small>모은 가치</small><strong><span id="valueScore">0</span>점</strong></div>
@@ -577,7 +586,7 @@ dialog::backdrop { background: rgba(8,26,22,.64); backdrop-filter: blur(5px); }
       <aside class="synergy-card synergy-panel-left" aria-label="협업 사회적가치 전체 목록">
         <span class="eyebrow">COLLABORATION SYNERGY</span>
         <div class="panel-title"><h2>협업 사회적가치</h2><span id="synergyCount">0 / 30</span></div>
-        <p class="synergy-guide">연결된 기업 체험을 완료하면 사회적가치가 수집됩니다.</p>
+        <p class="synergy-guide">연결된 기업 체험을 완료해 사회적가치를 5개 이상 수집하면 게임이 종료됩니다.</p>
         <div id="synergyList" class="synergy-list"></div>
       </aside>
       <div class="board-wrap" id="gameBoard" tabindex="-1">
@@ -605,8 +614,8 @@ dialog::backdrop { background: rgba(8,26,22,.64); backdrop-filter: blur(5px); }
                 <small id="turnHint">첫 탐험을 시작해요</small>
                 <strong id="positionLabel">출발점</strong>
               </div>
-              <div class="dice" id="dice" aria-live="polite" aria-label="기업 탐색 상태">📍</div>
-              <button class="roll-button" id="rollButton" type="button">다음 기업 체험하기</button>
+              <div class="dice" id="dice" aria-live="polite" aria-label="주사위 두 개의 눈">⚀ ⚀</div>
+              <button class="roll-button" id="rollButton" type="button">주사위 던지기</button>
             </div>
             <p class="map-note" id="mapNote">지도 표시는 상품안내서의 주소를 바탕으로 한 교육용 위치 안내입니다.</p>
           </section>
@@ -618,15 +627,15 @@ dialog::backdrop { background: rgba(8,26,22,.64); backdrop-filter: blur(5px); }
           <span class="eyebrow">HOW TO PLAY</span>
           <h2>한 번에 한 기업씩 알아봐요</h2>
           <ol>
-            <li><span>1</span>기업 찾아보기를 눌러 다음 위치로 이동해요.</li>
+            <li><span>1</span>주사위 두 개의 합계만큼 2~12칸 이동해 도착한 기업을 체험해요.</li>
             <li><span>2</span>도착한 기업의 상품과 사회적가치를 읽어요.</li>
-            <li><span>3</span>연결된 2~3개 기업 체험을 완료해 협업 사회적가치를 모아요.</li>
+            <li><span>3</span>영주시사회적경제지원센터에서 기업을 컨설팅해요. 완료한 기업은 다시 체험할 수 있어요.</li>
           </ol>
         </section>
         <section class="recent-card">
           <div class="panel-title"><h2>최근 발견</h2><span id="discoveredCount">0곳</span></div>
           <div id="recentList" class="recent-list">
-            <p class="empty-copy">아직 발견한 기업이 없어요.<br>기업 찾아보기를 눌러 보세요!</p>
+            <p class="empty-copy">아직 발견한 기업이 없어요.<br>주사위를 던져 보세요!</p>
           </div>
         </section>
         <section class="legend-card">
@@ -676,7 +685,6 @@ dialog::backdrop { background: rgba(8,26,22,.64); backdrop-filter: blur(5px); }
   <script src="vendor/leaflet/leaflet.js"></script>
   <script src="vendor/maplibre/maplibre-gl.js"></script>
   <script src="vendor/maplibre-leaflet/leaflet-maplibre-gl.js"></script>
-  <script src="vendor/jsQR-1.4.0.js"></script>
 <script>
 const CATEGORY_META = {
   food: { label: "식품", color: "#79bb41", icon: "🥗" },
@@ -903,19 +911,8 @@ const BUSINESSES = [
 const SPACES = [
   { type: "start", label: "출발", product: "가치 탐험 시작" },
   ...BUSINESSES.slice(0, 15).map((business) => ({ type: "business", business })),
-  { type: "quiz", label: "황금정부지원", product: "랜덤 지원 뽑기" },
+  { type: "quiz", label: "영주시사회적경제지원센터", product: "기업 선택 · 컨설팅" },
   ...BUSINESSES.slice(15).map((business) => ({ type: "business", business }))
-];
-
-const GOVERNMENT_SUPPORTS = [
-  { icon: "📣", name: "판로개척 지원", value: "지역상품의 새로운 소비자 연결" },
-  { icon: "🧪", name: "상품개발 지원", value: "지역자원을 활용한 제품 혁신" },
-  { icon: "🏗️", name: "시설개선 지원", value: "안전하고 쾌적한 작업환경" },
-  { icon: "🎬", name: "홍보콘텐츠 지원", value: "기업의 사회적가치 확산" },
-  { icon: "🧑‍🏫", name: "인력양성 지원", value: "지역인재의 성장과 일자리" },
-  { icon: "💻", name: "디지털전환 지원", value: "더 편리하고 효율적인 서비스" },
-  { icon: "🤲", name: "사회서비스 지원", value: "돌봄과 생활서비스 접근성 향상" },
-  { icon: "🌿", name: "친환경전환 지원", value: "자원절약과 지속가능한 생산" }
 ];
 
 const SYNERGIES = [
@@ -965,7 +962,7 @@ const MINIGAME_FILES = {
 };
 
 const STORAGE_KEY = "yeongju-value-board-v3";
-const DICE_FACES = ["📍", "🔎", "🧭", "🌱", "🤝", "✨"];
+const DICE_FACES = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
 const defaultState = { position: 0, score: 0, discovered: [], completed: [], recent: [], synergies: [] };
 let state = loadState();
 let moving = false;
@@ -982,6 +979,29 @@ let activeMinigameBusinessId = null;
 const rollButton = document.querySelector("#rollButton");
 const dice = document.querySelector("#dice");
 const mobileTrack = document.querySelector("#mobileTrack");
+const backgroundMusic = new Audio('assets/audio/yeongju-arcade.mp3');
+backgroundMusic.loop = true;
+backgroundMusic.volume = .22;
+backgroundMusic.preload = 'none';
+let musicEnabled = true;
+try { musicEnabled = localStorage.getItem('yeongju-music-enabled') !== 'false'; } catch {}
+let musicStarted = false;
+function updateMusic() {
+  const button = document.querySelector('#musicButton');
+  button.textContent = musicEnabled ? '♫ 음악 켬' : '♫ 음악 끔';
+  button.setAttribute('aria-pressed', String(musicEnabled));
+  button.setAttribute('aria-label', musicEnabled ? '배경음악 끄기' : '배경음악 켜기');
+  if (musicEnabled && musicStarted && activeMinigameBusinessId === null && !document.hidden) backgroundMusic.play().catch(() => {});
+  else backgroundMusic.pause();
+}
+document.querySelector('#musicButton').onclick = () => {
+  musicEnabled = !musicEnabled;
+  musicStarted = true;
+  try { localStorage.setItem('yeongju-music-enabled', String(musicEnabled)); } catch {}
+  updateMusic();
+};
+document.addEventListener('visibilitychange', updateMusic);
+updateMusic();
 
 function loadState() {
   try {
@@ -1027,7 +1047,7 @@ function renderBoard() {
       tile.addEventListener("click", () => openCompany(business.id - 1));
     } else {
       tile.innerHTML = `<strong>${escapeHtml(space.label)}</strong><small>${escapeHtml(space.product)}</small>`;
-      tile.addEventListener("click", () => space.type === "quiz" ? openGovernmentDraw() : showToast("기업 찾아보기를 눌러 체험을 시작하세요!"));
+      tile.addEventListener("click", () => space.type === "quiz" ? openChanceCard() : showToast("주사위를 던져 체험을 시작하세요!"));
     }
     board.appendChild(tile);
   });
@@ -1107,11 +1127,13 @@ function setupExplorerPhone() {
  const wrap=document.querySelector('#gameBoard');
  const camera=document.createElement('div');camera.className='board-camera';camera.setAttribute('aria-label','탐험가 주변 확대 지도 · 손가락으로 이동 가능');
  board.before(camera);camera.appendChild(board);
- const toolbar=document.createElement('div');toolbar.className='explorer-toolbar';toolbar.innerHTML='<span>🧭 탐험가 주변 확대 지도</span><button type="button" id="followExplorerButton">내 말 찾기</button>';wrap.prepend(toolbar);
- document.querySelector('#followExplorerButton').onclick=()=>{explorerFollow=true;followExplorer();};
+ const toolbar=document.createElement('div');toolbar.className='explorer-toolbar';toolbar.innerHTML='<span>🧭 영주 기업 체험지도</span><div><button type="button" id="mapOverviewButton" aria-pressed="false">전체 칸</button><button type="button" id="followExplorerButton">내 말 찾기</button></div>';wrap.prepend(toolbar);
+ function updateOverview(){const overview=board.classList.contains('overview');board.style.setProperty('--phone-board-size',overview?Math.min(camera.clientWidth,camera.clientHeight)+'px':'920px');if(overview)camera.scrollTo({left:0,top:0,behavior:'instant'});document.querySelector('#mapOverviewButton').textContent=overview?'확대 보기':'전체 칸';document.querySelector('#mapOverviewButton').setAttribute('aria-pressed',String(overview));map?.invalidateSize();requestAnimationFrame(renderExplorerPawn);}
+ document.querySelector('#mapOverviewButton').onclick=()=>{board.classList.toggle('overview');updateOverview();};
+ document.querySelector('#followExplorerButton').onclick=()=>{board.classList.remove('overview');updateOverview();explorerFollow=true;followExplorer();};
  camera.addEventListener('pointerdown',()=>{if(!moving)explorerFollow=false;});
  const panel=document.querySelector('.turn-panel'),home=panel.parentElement,anchor=document.createComment('turn-panel-home');panel.before(anchor);
- function layout(){if(window.innerWidth<=800)wrap.appendChild(panel);else anchor.after(panel);map?.invalidateSize();requestAnimationFrame(renderExplorerPawn);}
+ function layout(){if(window.innerWidth<=800)wrap.appendChild(panel);else anchor.after(panel);updateOverview();map?.invalidateSize();requestAnimationFrame(renderExplorerPawn);}
  window.addEventListener('resize',layout);layout();
  document.querySelector('#gameStartButton').addEventListener('click',()=>setTimeout(()=>{explorerFollow=true;renderExplorerPawn();},150));
 }
@@ -1137,18 +1159,21 @@ function renderState({ scrollMobile = false } = {}) {
   const currentSpace = SPACES[state.position];
   const positionText = currentSpace.type === "business" ? currentSpace.business.short : currentSpace.label;
   document.querySelector("#positionLabel").textContent = positionText;
-  document.querySelector("#completedCount").textContent = completedLineCount();
+  document.querySelector("#completedCount").textContent = state.synergies.length;
   document.querySelector("#discoveredCount").textContent = `${state.discovered.length}곳`;
   document.querySelector("#valueScore").textContent = state.score;
-  document.querySelector("#progressBar").style.width = `${(completedLineCount() / 4) * 100}%`;
+  document.querySelector("#progressBar").style.width = `${Math.min(state.synergies.length / 5, 1) * 100}%`;
   renderSynergies();
   renderRecent();
+  rollButton.disabled = moving || explorationComplete();
+  rollButton.textContent = explorationComplete() ? "탐험 성공!" : "주사위 던지기";
+  if (explorationComplete()) document.querySelector("#turnHint").textContent = "사회적가치 5개 이상 수집 · 게임 종료";
 }
 
 function renderRecent() {
   const holder = document.querySelector("#recentList");
   if (!state.recent.length) {
-    holder.innerHTML = `<p class="empty-copy">아직 발견한 기업이 없어요.<br>기업 찾아보기를 눌러 보세요!</p>`;
+    holder.innerHTML = `<p class="empty-copy">아직 발견한 기업이 없어요.<br>주사위를 던져 보세요!</p>`;
     return;
   }
   holder.innerHTML = state.recent.slice(0, 4).map((id) => {
@@ -1174,12 +1199,12 @@ function companyShell(business, inner) {
 function openCompany(index) {
   const business = BUSINESSES[index];
   if (!business) return;
-  const next = nextRouteBusiness();
-  if (next && !state.completed.includes(business.id) && !nextExperienceLine().businesses.some(b => b.id === business.id)) {
-    showToast(`${nextExperienceLine().name} 라인에서 기업 하나를 먼저 체험해주세요.`);
+  if (moving) return;
+  if (explorationComplete() && !state.completed.includes(business.id)) { showExplorationCompletion(); return; }
+  if (SPACES[state.position]?.business?.id !== business.id && !state.completed.includes(business.id)) {
+    showToast('주사위로 도착한 기업을 체험하세요. 지원센터에서는 기업을 골라 컨설팅할 수 있어요.');
     return;
   }
-  state.position = SPACES.findIndex(space => space.business?.id === business.id);
   discoverBusiness(business);
   const completed = state.completed.includes(business.id);
   dialogContent.innerHTML = companyShell(business, `
@@ -1200,6 +1225,7 @@ function wireDialogButtons(business) {
 }
 
 function openMinigame(business) {
+  if (explorationComplete() && !state.completed.includes(business.id)) { showExplorationCompletion(); return; }
   const filename = MINIGAME_FILES[business.id];
   if (!filename) {
     showToast("이 기업의 미니게임 파일을 찾지 못했습니다.");
@@ -1210,6 +1236,7 @@ function openMinigame(business) {
   document.querySelector("#minigameStatus").textContent = state.completed.includes(business.id) ? "완료한 체험 · 다시 도전" : "체험 진행 중";
   minigameFrame.src = new URL(`minigames/${filename}`, window.location.href).href;
   dialog.close();
+  updateMusic();
   if (!minigameDialog.open) minigameDialog.showModal();
 }
 
@@ -1217,13 +1244,15 @@ function closeMinigame() {
   if (minigameDialog.open) minigameDialog.close();
   minigameFrame.src = "about:blank";
   activeMinigameBusinessId = null;
+  updateMusic();
   resetMapView();
   rollButton.focus();
 }
 
-function completeMinigameExperience(businessId) {
+function completeMinigameExperience(businessId, method = '체험') {
   const business = BUSINESSES.find((item) => item.id === businessId);
   if (!business) return;
+  const alreadyCleared = explorationComplete();
   const firstCompletion = !state.completed.includes(businessId);
   let newlyUnlocked = [];
   if (firstCompletion) {
@@ -1234,24 +1263,26 @@ function completeMinigameExperience(businessId) {
     renderState();
   }
   document.querySelector("#minigameStatus").textContent = newlyUnlocked.length ? `체험 완료 · 협업가치 ${newlyUnlocked.length}개 해금!` : "체험 완료 ✓";
-  showToast(newlyUnlocked.length ? `${business.short} 체험 완료! 협업 사회적가치 ${newlyUnlocked.length}개를 수집했어요.` : `${business.short} 미니게임 체험을 완료했어요!`);
-  resetMapView();
-  if (festivalReady()) {
-    closeMinigame();
-    openFestivalMission();
+  showToast(`${business.short} ${method} 완료! ${method === '컨설팅' ? business.values.join(' · ') + ' 가치가 창출되었어요.' : '지도로 돌아왔어요.'}${newlyUnlocked.length ? ' 협업 사회적가치 '+newlyUnlocked.length+'개 수집!' : ''}`);
+  document.querySelector('#turnHint').textContent = business.short + ' ' + method + ' 완료 · 다시 체험 가능';
+  closeMinigame();
+  if (explorationComplete() && !alreadyCleared) {
+    showExplorationCompletion();
   }
 }
 
 function renderMission(business) {
   const meta = CATEGORY_META[business.category];
   dialogContent.innerHTML = companyShell(business, `
-    <div class="mission-head"><span class="mission-icon">${meta.icon}</span><span><h3>가치 선택 미션</h3><p>기업의 활동을 떠올리며 가장 알맞은 답을 골라보세요.</p></span></div>
+    <p class="consulting-label">영주시사회적경제지원센터 · 가상 컨설팅</p>
+    <div class="mission-head"><span class="mission-icon">${meta.icon}</span><span><h3>${escapeHtml(business.short)} 컨설팅</h3><p>기업에 맞는 제안을 선택해 사회적가치를 만들어 주세요.</p></span></div>
+    <div class="value-chips">${business.values.map(value => `<span class="value-chip">${escapeHtml(value)}</span>`).join('')}</div>
     <p class="mission-question">${escapeHtml(business.mission.q)}</p>
     <div class="choice-list">${business.mission.options.map((option, choiceIndex) => `<button class="choice-button" type="button" data-choice="${choiceIndex}"><span>${choiceIndex + 1}</span>${escapeHtml(option)}</button>`).join("")}</div>
     <div id="missionFeedback"></div>
-    <div class="dialog-actions"><button class="secondary-button" type="button" data-action="back">기업 소개 다시 보기</button></div>
+    <div class="dialog-actions"><button class="secondary-button" type="button" data-action="back">다른 기업 선택</button></div>
   `);
-  dialogContent.querySelector('[data-action="back"]').addEventListener("click", () => openCompany(business.id - 1));
+  dialogContent.querySelector('[data-action="back"]').addEventListener("click", openChanceCard);
   dialogContent.querySelectorAll("[data-choice]").forEach((button) => button.addEventListener("click", () => answerMission(business, Number(button.dataset.choice))));
 }
 
@@ -1270,100 +1301,105 @@ function answerMission(business, choice) {
     return;
   }
 
-  const firstCompletion = !state.completed.includes(business.id);
-  let newlyUnlocked = [];
-  if (firstCompletion) {
-    state.completed.push(business.id);
-    state.score += 20;
-    newlyUnlocked = collectSynergies();
-    saveState();
-    renderState();
-  }
-  resetMapView();
-  feedback.innerHTML = `<div class="feedback-box"><strong>정답이에요!</strong><p>${escapeHtml(business.mission.learning)}</p></div><div class="dialog-actions"><button class="primary-button" type="button" data-action="reward">결과 확인</button></div>`;
-  feedback.querySelector('[data-action="reward"]').addEventListener("click", () => renderReward(business, firstCompletion, newlyUnlocked));
+  dialog.close();
+  completeMinigameExperience(business.id, '컨설팅');
 }
 
 function renderReward(business, firstCompletion, newlyUnlocked = []) {
-  if (festivalReady()) { openFestivalMission(); return; }
+  if (explorationComplete()) { showExplorationCompletion(); return; }
   const synergyResults = newlyUnlocked.map((synergy) => `<div class="synergy-unlock"><strong>✨ 협업 시너지 수집!</strong><p>${escapeHtml(synergy.mission)}<br><b>${escapeHtml(synergy.value)}</b></p></div>`).join("");
   dialogContent.innerHTML = companyShell(business, `
     <div class="reward-card"><span class="reward-icon">${state.completed.length === 30 ? "🏆" : "✨"}</span><h3>${state.completed.length === 30 ? "모든 기업 탐험 완료!" : `${escapeHtml(business.short)} 체험 완료`}</h3><p>${escapeHtml(business.values[0])}의 의미를 배우고<br>영주의 사회적가치를 한 걸음 키웠어요.</p><span class="reward-score">${firstCompletion ? "+20 가치점수" : "이미 획득한 배지예요"}</span></div>
     ${synergyResults}
-    <div class="dialog-actions"><button class="secondary-button" type="button" data-action="intro">기업 소개 보기</button><button class="primary-button" type="button" data-action="close">다음 기업 체험하기</button></div>
+    <div class="dialog-actions"><button class="secondary-button" type="button" data-action="intro">기업 소개 보기</button><button class="primary-button" type="button" data-action="close">주사위 던지기</button></div>
   `);
   dialogContent.querySelector('[data-action="intro"]').addEventListener("click", () => openCompany(business.id - 1));
   dialogContent.querySelector('[data-action="close"]').addEventListener("click", () => { dialog.close(); performRoll(); });
 }
 
-function openGovernmentDraw() {
-  const supportCard = { id: "GOLD", category: "education", short: "황금정부지원", product: "랜덤 지원 뽑기" };
-  dialogContent.innerHTML = companyShell(supportCard, `
-    <div class="mission-head"><span class="mission-icon">🎫</span><span><h3>황금정부지원 뽑기</h3><p>지원사업과 연결될 기업 체험이 무작위로 선정됩니다.</p></span></div>
-    <div class="support-draw"><div><div class="support-machine" id="supportMachine">🎁</div><p>어떤 정부지원과 기업 체험이 연결될까요?</p><button class="primary-button" type="button" data-action="draw-support">지원 뽑기</button></div></div>
+function openChanceCard() {
+  if (moving || minigameDialog.open) return;
+  if (explorationComplete()) { showExplorationCompletion(); return; }
+  if (SPACES[state.position]?.type !== 'quiz') {
+    showToast('영주시사회적경제지원센터 칸에 도착하면 기업을 골라 컨설팅할 수 있어요.');
+    return;
+  }
+  const card = { id: '센터', category: 'education', short: '영주시사회적경제지원센터', product: '사회적기업 선택 · 컨설팅 · 사회적가치 창출' };
+  dialogContent.innerHTML = companyShell(card, `
+    <div class="mission-head"><span class="mission-icon">🤝</span><span><h3>어떤 기업을 도와줄까요?</h3><p>기업을 선택하고 컨설팅 제안을 골라 주세요. 알맞은 제안을 하면 그 기업의 사회적가치가 창출되고 체험이 완료돼요.</p></span></div>
+    <div class="chance-companies">${BUSINESSES.map(business => `<button class="choice-button" type="button" data-chance-business="${business.id}"><strong>${String(business.id).padStart(2, '0')} · ${escapeHtml(business.short)}</strong><br><small>${escapeHtml(business.values.join(' · '))} · ${state.completed.includes(business.id) ? '완료 · 다시 컨설팅' : '컨설팅하기'}</small></button>`).join('')}</div>
     <div class="dialog-actions"><button class="secondary-button" type="button" data-action="close">지도로 돌아가기</button></div>
   `);
-  dialogContent.querySelector('[data-action="close"]').addEventListener("click", () => dialog.close());
-  dialogContent.querySelector('[data-action="draw-support"]').addEventListener("click", drawGovernmentSupport);
+  dialogContent.querySelector('[data-action="close"]').onclick = () => dialog.close();
+  dialogContent.querySelectorAll('[data-chance-business]').forEach(button => {
+    button.onclick = () => {
+      const business = BUSINESSES.find(item => item.id === Number(button.dataset.chanceBusiness));
+      discoverBusiness(business);
+      renderMission(business);
+    };
+  });
   if (!dialog.open) dialog.showModal();
 }
 
-async function drawGovernmentSupport() {
-  const button = dialogContent.querySelector('[data-action="draw-support"]');
-  const machine = document.querySelector("#supportMachine");
-  button.disabled = true;
-  machine.classList.add("drawing");
-  for (let index = 0; index < 12; index += 1) {
-    machine.textContent = GOVERNMENT_SUPPORTS[index % GOVERNMENT_SUPPORTS.length].icon;
-    await wait(75);
-  }
-  const support = GOVERNMENT_SUPPORTS[Math.floor(Math.random() * GOVERNMENT_SUPPORTS.length)];
-  const uncompleted = BUSINESSES.filter((business) => !state.completed.includes(business.id));
-  const candidates = nextExperienceLine()?.businesses || (uncompleted.length ? uncompleted : BUSINESSES);
-  const business = candidates[Math.floor(Math.random() * candidates.length)];
-  dialogContent.querySelector(".company-body").innerHTML = `
-    <div class="support-result"><span class="support-icon">${support.icon}</span><h3>${escapeHtml(support.name)} 당첨!</h3><p>${escapeHtml(support.value)}</p><div class="support-target">연결 기업체험<br>${escapeHtml(business.short)} · ${escapeHtml(business.product)}</div></div>
-    <div class="dialog-actions"><button class="secondary-button" type="button" data-action="again">다시 뽑기</button><button class="primary-button" type="button" data-action="linked-game">연결 미니게임 시작</button></div>`;
-  dialogContent.querySelector('[data-action="again"]').addEventListener("click", openGovernmentDraw);
-  dialogContent.querySelector('[data-action="linked-game"]').addEventListener("click", () => openMinigame(business));
+function openReplayList() {
+  if (moving || minigameDialog.open) return;
+  dialogContent.innerHTML = '<article><header class="company-hero"><h2 id="dialogTitle">완료한 체험 다시 하기</h2><p>완료한 기업은 주사위 이동 없이 언제든 다시 체험할 수 있어요.</p></header><div class="company-body"><div class="replay-list">' + (state.completed.length ? state.completed.map(id => {
+    const business = BUSINESSES.find(item => item.id === id);
+    return `<button type="button" class="replay-item" data-replay-business="${id}"><span><strong>✓ ${escapeHtml(business.short)}</strong><small>${escapeHtml(business.product)}</small></span><em>다시 체험 →</em></button>`;
+  }).join('') : '<p>아직 완료한 체험이 없어요. 주사위를 던져 첫 기업을 만나보세요!</p>') + '</div><div class="dialog-actions"><button class="secondary-button" id="closeReplayList" type="button">지도로 돌아가기</button></div></div></article>';
+  dialogContent.querySelectorAll('[data-replay-business]').forEach(button => button.onclick = () => openMinigame(BUSINESSES.find(item => item.id === Number(button.dataset.replayBusiness))));
+  document.querySelector('#closeReplayList').onclick = () => dialog.close();
+  if (!dialog.open) dialog.showModal();
 }
+document.querySelector('#replayButton').onclick = openReplayList;
 
 function wait(ms) { return new Promise((resolve) => window.setTimeout(resolve, ms)); }
 
-// 위 → 오른쪽 → 아래 → 왼쪽, 각 라인에서 한 기업씩 체험합니다.
-function experienceLines() {
-  return [
-    { name: "위쪽", spaces: [1, 8] },
-    { name: "오른쪽", spaces: [9, 16] },
-    { name: "아래쪽", spaces: [17, 24] },
-    { name: "왼쪽", spaces: [25, 31] }
-  ].map(line => ({ ...line, businesses: SPACES.slice(line.spaces[0], line.spaces[1] + 1).filter(s => s.type === "business").map(s => s.business) }));
-}
-function completedLineCount() {
-  return experienceLines().filter(line => line.businesses.some(b => state.completed.includes(b.id))).length;
-}
-function nextExperienceLine() {
-  return experienceLines().find(line => !line.businesses.some(b => state.completed.includes(b.id)));
-}
-function nextRouteBusiness() {
-  const candidates = nextExperienceLine()?.businesses;
-  if (!candidates?.length) return undefined;
-  return candidates[Math.floor(Math.random() * candidates.length)];
-}
-function festivalReady() { return completedLineCount() === 4; }
+function explorationComplete() { return state.synergies.length >= 5; }
 
 async function performRoll() {
- if(moving||dialog.open||minigameDialog.open)return null;
- const next=nextRouteBusiness();if(!next){openFestivalMission();return null;}
- const destination=SPACES.findIndex(space=>space.business?.id===next.id);
- moving=true;rollButton.disabled=true;explorerFollow=true;
- try{
-   while(state.position!==destination){state.position=(state.position+1)%SPACES.length;renderState();await wait(window.matchMedia('(prefers-reduced-motion: reduce)').matches?15:190);}
-   moving=false;renderState();saveState();
-   document.querySelector('#turnHint').textContent=(completedLineCount()+1)+' / 4 · '+nextExperienceLine().name+' 라인';
-   focusBusinessOnMap(next);await wait(350);openCompany(next.id-1);
-   return {position:state.position,business_id:next.id};
- }finally{moving=false;rollButton.disabled=false;renderExplorerPawn();}
+  if (moving || dialog.open || minigameDialog.open) return null;
+  if (explorationComplete()) { showExplorationCompletion(); return null; }
+  moving = true;
+  rollButton.disabled = true;
+  explorerFollow = true;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const diceValues = [Math.floor(Math.random() * 6) + 1, Math.floor(Math.random() * 6) + 1];
+  const steps = diceValues[0] + diceValues[1];
+  try {
+    dice.classList.add('rolling');
+    if (!reducedMotion) {
+      for (let tick = 0; tick < 8; tick++) {
+        dice.textContent = DICE_FACES[tick % 6] + ' ' + DICE_FACES[(tick + 3) % 6];
+        await wait(65);
+      }
+    }
+    dice.classList.remove('rolling');
+    dice.textContent = diceValues.map(value => DICE_FACES[value - 1]).join(' ');
+    dice.setAttribute('aria-label', '주사위 ' + diceValues[0] + '과 ' + diceValues[1] + ', 합계 ' + steps);
+    document.querySelector('#turnHint').textContent = diceValues[0] + ' + ' + diceValues[1] + ' = ' + steps + '칸 이동!';
+    for (let step = 0; step < steps; step++) {
+      state.position = (state.position + 1) % SPACES.length;
+      renderState({ scrollMobile: true });
+      await wait(reducedMotion ? 0 : 190);
+    }
+    saveState();
+    moving = false;
+    const space = SPACES[state.position];
+    if (space.type === 'business') {
+      focusBusinessOnMap(space.business);
+      openCompany(space.business.id - 1);
+    } else if (space.type === 'quiz') {
+      openChanceCard();
+    } else {
+      showToast('출발점에 도착했어요! 다시 주사위를 던져 탐험을 이어가세요.');
+    }
+    return { position: state.position, dice: steps, dice_values: diceValues, business_id: space.business?.id ?? null };
+  } finally {
+    moving = false;
+    dice.classList.remove('rolling');
+    renderState();
+  }
 }
 
 function showToast(message) {
@@ -1509,8 +1545,8 @@ function registerWebMCP() {
     },
     {
       name: "roll_board_dice",
-      title: "다음 기업 찾아보기",
-      description: "지도 경로를 따라 다음 기업으로 이동하고 해당 기업 또는 황금정부지원 뽑기를 엽니다.",
+      title: "주사위 던지기",
+      description: "주사위 두 개의 합계(2~12)만큼 이동하고 도착한 기업 또는 영주시사회적경제지원센터를 엽니다.",
       inputSchema: { type: "object", properties: {}, additionalProperties: false },
       annotations: { readOnlyHint: false, untrustedContentHint: false },
       execute: async () => {
@@ -1533,6 +1569,8 @@ initMap();
 registerWebMCP();
 
 document.querySelector("#gameStartButton").addEventListener("click", async () => {
+  musicStarted = true;
+  updateMusic();
   try {
     if (!document.fullscreenElement && document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
   } catch { /* 체험 지도는 전체화면 권한이 없어도 시작할 수 있습니다. */ }
@@ -1551,6 +1589,7 @@ window.addEventListener("message", (event) => {
   const businessId = Number(data.businessId);
   if (businessId !== activeMinigameBusinessId) return;
   completeMinigameExperience(businessId);
+  if (data.returnToMap && minigameDialog.open) closeMinigame();
 });
 document.querySelector("#minigameClose").addEventListener("click", closeMinigame);
 minigameDialog.addEventListener("cancel", (event) => { event.preventDefault(); closeMinigame(); });
@@ -1562,154 +1601,26 @@ dialog.addEventListener("cancel", (event) => { if (moving) event.preventDefault(
 document.querySelector("#resetButton").addEventListener("click", () => document.querySelector("#confirmDialog").showModal());
 document.querySelector("#confirmDialog").addEventListener("close", (event) => {
   if (event.target.returnValue !== "confirm") return;
-  state = { ...defaultState, discovered: [], completed: [], recent: [] };
+  state = { ...defaultState, discovered: [], completed: [], recent: [], synergies: [] };
   saveState();
   renderState();
-  dice.textContent = DICE_FACES[0];
+  dice.textContent = DICE_FACES[0] + ' ' + DICE_FACES[0];
+  dice.setAttribute('aria-label', '주사위 두 개의 눈');
   document.querySelector("#turnHint").textContent = "첫 탐험을 시작해요";
   showToast("탐험 기록을 초기화했습니다.");
 });
 
-// 축전 부스 미션: 모든 자료는 단독실행 폴더 안에서 불러옵니다.
-const FESTIVAL_QR_RECORDS = [{"name":"함께 걷는 길 마을학교","payload":"영주창의융합축전 | 사회적기업을 찾아라!\n방문 장소: 함께 걷는 길 마을학교\n미션: 이 이름의 실제 부스를 찾아 간판과 부스가 함께 보이도록 사진 1장을 찍으세요.\n촬영한 사진은 휴대폰에 저장하고 진행요원에게 보여주세요.","file":"01_함께 걷는 길 마을학교_QR.png","decode_verified":true},{"name":"관사골 마을학교","payload":"영주창의융합축전 | 사회적기업을 찾아라!\n방문 장소: 관사골 마을학교\n미션: 이 이름의 실제 부스를 찾아 간판과 부스가 함께 보이도록 사진 1장을 찍으세요.\n촬영한 사진은 휴대폰에 저장하고 진행요원에게 보여주세요.","file":"02_관사골 마을학교_QR.png","decode_verified":true},{"name":"꿈애(愛)지음 마을학교","payload":"영주창의융합축전 | 사회적기업을 찾아라!\n방문 장소: 꿈애(愛)지음 마을학교\n미션: 이 이름의 실제 부스를 찾아 간판과 부스가 함께 보이도록 사진 1장을 찍으세요.\n촬영한 사진은 휴대폰에 저장하고 진행요원에게 보여주세요.","file":"03_꿈애(愛)지음 마을학교_QR.png","decode_verified":true},{"name":"영주시 사회적경제지원센터","payload":"영주창의융합축전 | 사회적기업을 찾아라!\n방문 장소: 영주시 사회적경제지원센터\n미션: 이 이름의 실제 부스를 찾아 간판과 부스가 함께 보이도록 사진 1장을 찍으세요.\n촬영한 사진은 휴대폰에 저장하고 진행요원에게 보여주세요.","file":"04_영주시 사회적경제지원센터_QR.png","decode_verified":true}];
-let festivalCameraStream = null;
-let festivalScanTimer = null;
-let festivalCameraGeneration = 0;
-function stopFestivalCamera() {
-  festivalCameraGeneration++;
-  clearTimeout(festivalScanTimer);
-  festivalScanTimer = null;
-  if (festivalCameraStream) festivalCameraStream.getTracks().forEach(track => track.stop());
-  festivalCameraStream = null;
-  const video = document.querySelector('#festivalVideo');
-  if (video) video.srcObject = null;
-}
-function normalizeFestivalQR(text) { return String(text).replace(/\r\n?/g, '\n').trim(); }
-function festivalQRMatches(text, index) {
-  return Boolean(FESTIVAL_QR_RECORDS[index] && normalizeFestivalQR(text) === normalizeFestivalQR(FESTIVAL_QR_RECORDS[index].payload));
-}
-function festivalScanStatus(message) {
-  const node = document.querySelector('#festivalScanStatus');
-  if (node) node.textContent = message;
-}
-function acceptFestivalQR(text) {
-  if (!festivalReady() || !dialog.open) return false;
-  const index = state.festivalBoothIndex;
-  if (!festivalQRMatches(text, index)) {
-    const other = FESTIVAL_QR_RECORDS.find(record => normalizeFestivalQR(record.payload) === normalizeFestivalQR(text));
-    festivalScanStatus(other ? '다른 부스의 QR이에요. 지정된 '+FESTIVAL_QR_RECORDS[index].name+' QR을 찍어 주세요.' : '미션 QR이 아니에요. 부스 안내판의 QR 전체를 비춰 주세요.');
-    return false;
-  }
-  state.festivalCompleted = true;
-  state.festivalCompletedAt = new Date().toISOString();
-  saveState();
-  stopFestivalCamera();
-  renderFestivalCompletion();
-  return true;
-}
-function renderFestivalCompletion() {
-  stopFestivalCamera();
-  const record = FESTIVAL_QR_RECORDS[state.festivalBoothIndex];
-  dialogContent.innerHTML = '<article><header class="company-hero"><h2 id="dialogTitle">🎉 모든 미션 완료!</h2><p>영주의 사회적가치를 함께 발견했어요.</p></header><div class="company-body"><section style="text-align:center;padding:24px;border:2px solid #123f35;border-radius:16px"><div style="font-size:4rem">🏆</div><h3>사회적기업 탐험 성공!</h3><p>위쪽 · 오른쪽 · 아래쪽 · 왼쪽<br><strong>4방향 기업 체험 완료 ✓</strong></p><p>'+escapeHtml(record.name)+'<br><strong>현장 QR 인증 완료 ✓</strong></p><p>지역과 이웃을 생각하는 여러분의 발걸음을 응원합니다.</p></section><div class="dialog-actions"><button class="primary-button" id="festivalDone" type="button">지도로 돌아가기</button></div></div></article>';
-  document.querySelector('#festivalDone').onclick = () => dialog.close();
-  if (!dialog.open) dialog.showModal();
-}
-async function startFestivalCamera() {
-  stopFestivalCamera();
-  const generation = festivalCameraGeneration;
-  if (!festivalReady() || state.festivalCompleted || !dialog.open) return;
-  const video = document.querySelector('#festivalVideo');
-  if (!video) return;
-  if (!navigator.mediaDevices?.getUserMedia) {
-    festivalScanStatus('카메라를 열 수 없습니다. HTTPS 주소에서 열거나, 아래 QR 사진 선택을 이용해 주세요.');
-    return;
-  }
-  festivalScanStatus('카메라 사용을 허용한 뒤, 지정된 부스의 QR을 비춰 주세요.');
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}},audio:false});
-    if (generation !== festivalCameraGeneration || !dialog.open || !video.isConnected) {stream.getTracks().forEach(track=>track.stop());return;}
-    festivalCameraStream = stream;
-    video.srcObject = stream;
-    await video.play();
-    if (generation !== festivalCameraGeneration) return;
-    festivalScanStatus('QR 전체가 화면 안에 들어오도록 비춰 주세요.');
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d',{willReadFrequently:true});
-    function scan() {
-      if (generation !== festivalCameraGeneration || !dialog.open || !video.isConnected) return;
-      if (video.readyState >= 2 && video.videoWidth) {
-        canvas.width = Math.min(video.videoWidth,960);
-        canvas.height = Math.round(video.videoHeight*canvas.width/video.videoWidth);
-        context.drawImage(video,0,0,canvas.width,canvas.height);
-        const image = context.getImageData(0,0,canvas.width,canvas.height);
-        const result = jsQR(image.data,image.width,image.height,{inversionAttempts:'attemptBoth'});
-        if (result && acceptFestivalQR(result.data)) return;
-      }
-      festivalScanTimer = setTimeout(scan,220);
-    }
-    scan();
-  } catch(error) {
-    if (generation !== festivalCameraGeneration) return;
-    stopFestivalCamera();
-    festivalScanStatus(error.name==='NotAllowedError' ? '카메라 권한이 필요해요. 브라우저에서 카메라를 허용하고 다시 눌러 주세요. QR 사진 선택도 사용할 수 있어요.' : '카메라를 연결하지 못했어요. 다시 연결하거나 QR 사진을 선택해 주세요.');
-  }
-}
-async function scanFestivalPhoto(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  stopFestivalCamera();
-  const generation = festivalCameraGeneration;
-  const url = URL.createObjectURL(file);
-  try {
-    const image = new Image();
-    await new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=reject;image.src=url;});
-    if (generation !== festivalCameraGeneration || !dialog.open) return;
-    const canvas = document.createElement('canvas');
-    const scale = Math.min(1,2000/Math.max(image.naturalWidth,image.naturalHeight));
-    canvas.width = Math.round(image.naturalWidth*scale);canvas.height = Math.round(image.naturalHeight*scale);
-    const context = canvas.getContext('2d',{willReadFrequently:true});context.drawImage(image,0,0,canvas.width,canvas.height);
-    const pixels = context.getImageData(0,0,canvas.width,canvas.height);
-    const result = jsQR(pixels.data,pixels.width,pixels.height,{inversionAttempts:'attemptBoth'});
-    if (result) acceptFestivalQR(result.data);else festivalScanStatus('사진에서 QR을 찾지 못했어요. QR이 크고 선명하게 나오도록 다시 촬영해 주세요.');
-  } catch(_) {if(generation===festivalCameraGeneration)festivalScanStatus('사진을 읽지 못했어요. JPG 또는 PNG 사진을 선택해 주세요.');}
-  finally {URL.revokeObjectURL(url);event.target.value='';}
-}
-function openFestivalMission() {
-  if (!festivalReady()) {showToast('위 · 오른쪽 · 아래 · 왼쪽 체험을 먼저 완료해 주세요.');return;}
-  stopFestivalCamera();
+function showExplorationCompletion() {
+  if (!explorationComplete()) return;
   if (minigameDialog.open) closeMinigame();
-  if (!Number.isInteger(state.festivalBoothIndex) || !FESTIVAL_QR_RECORDS[state.festivalBoothIndex]) {
-    state.festivalBoothIndex = Math.floor(Math.random()*FESTIVAL_QR_RECORDS.length);
-    state.festivalCompleted = false;
-    saveState();
-  }
-  if (state.festivalCompleted) {renderFestivalCompletion();return;}
-  const name = FESTIVAL_QR_RECORDS[state.festivalBoothIndex].name;
-  dialogContent.innerHTML = '<article><header class="company-hero"><h2 id="dialogTitle">마지막 미션 · 부스 QR을 찾아라!</h2><p>4방향 체험 완료! 지정된 부스를 찾아 QR을 찍어 주세요.</p></header><div class="company-body"><section style="border:2px solid #123f35;border-radius:16px;padding:18px;text-align:center"><p>🎯 나의 방문 부스</p><h3>'+escapeHtml(name)+'</h3><p>현장 안내판에 있는 기존 QR을 카메라에 비춰 주세요.</p><video id="festivalVideo" autoplay muted playsinline style="display:block;width:100%;max-height:42dvh;min-height:160px;background:#10291f;border-radius:12px;object-fit:cover"></video><p id="festivalScanStatus" role="status" aria-live="polite">카메라 연결 중…</p><button class="primary-button" id="festivalCameraStart" type="button">카메라 다시 연결</button><label class="secondary-button" style="display:inline-block;margin:8px;cursor:pointer">QR 사진 선택<input id="festivalPhoto" type="file" accept="image/*" capture="environment" style="display:none"></label></section><p>QR은 이 기기에서 인식하며, 카메라 영상과 사진은 전송하거나 저장하지 않습니다.</p><div class="dialog-actions"><button class="secondary-button" id="festivalBack" type="button">지도로 돌아가기</button></div></div></article>';
-  document.querySelector('#festivalBack').onclick = () => {stopFestivalCamera();dialog.close();};
-  document.querySelector('#festivalCameraStart').onclick = startFestivalCamera;
-  document.querySelector('#festivalPhoto').onchange = scanFestivalPhoto;
+  dialogContent.innerHTML = '<article><header class="company-hero"><h2 id="dialogTitle">🎉 사회적가치 수집 성공!</h2><p>영주의 사회적가치를 함께 발견했어요.</p></header><div class="company-body"><section style="text-align:center;padding:24px;border:2px solid #123f35;border-radius:16px"><div style="font-size:4rem">🏆</div><h3>사회적기업 탐험 성공!</h3><p><strong>협업 사회적가치 '+state.synergies.length+'개 수집 완료 ✓</strong><br>목표 5개 달성! 게임이 종료되었습니다.</p><p>지역과 이웃을 생각하는 여러분의 발걸음을 응원합니다.</p></section><div class="dialog-actions"><button class="primary-button" id="explorationDone" type="button">지도로 돌아가기</button></div></div></article>';
+  document.querySelector('#explorationDone').onclick = () => dialog.close();
+  renderState();
   if (!dialog.open) dialog.showModal();
-  startFestivalCamera();
 }
-dialog.addEventListener('close',stopFestivalCamera);
-document.addEventListener('visibilitychange',()=>{if(document.hidden)stopFestivalCamera();});
-window.addEventListener('pagehide',stopFestivalCamera);
 
-const festivalButton = document.createElement('button');
-festivalButton.type = 'button';
-festivalButton.className = 'guide-button';
-festivalButton.textContent = '축전 부스 미션';
-festivalButton.addEventListener('click', () => {
-  if (!festivalReady()) {
-    showToast(`기업 체험 ${completedLineCount()} / 4개 라인 · 위 → 오른쪽 → 아래 → 왼쪽 순서로 한 곳씩 체험하세요.`);
-    return;
-  }
-  openFestivalMission();
-});
-document.querySelector('.top-actions').prepend(festivalButton);
-document.querySelector('#gameStartButton').addEventListener('click', () => {
-  if (festivalReady()) openFestivalMission();
+document.querySelector("#gameStartButton").addEventListener("click", () => {
+  if (explorationComplete()) showExplorationCompletion();
 });
 
 </script>
