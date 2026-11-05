@@ -1,7 +1,14 @@
 .map-actions { display:flex; align-items:center; gap:.4rem; }
 .music-button,.replay-button { min-height:42px; padding:.5rem .75rem; border:1px solid #c9d9ca; border-radius:.7rem; background:white; color:#123f35; font-weight:800; cursor:pointer; }
 .music-button[aria-pressed="true"] { background:#eff8c8; }
-.start-intro { color:#123f35!important; font-weight:700; }
+.start-card { grid-template-columns:minmax(0,.65fr) minmax(0,1fr); width:min(54rem,100%); gap:1.4rem; padding:1.8rem; }
+.start-explorer { width:auto; max-width:100%; height:min(52dvh,23rem); margin:auto; }
+.start-card .start-logo { display:flex; align-items:center; justify-content:center; width:5rem; height:2.5rem; margin-bottom:.8rem; gap:.15rem; font-size:1rem; }
+.start-card h1 { font-size:clamp(1.3rem,2.4vw,1.9rem); }
+.start-card .start-intro { margin:1rem 0; color:#123f35; font-size:clamp(1.5rem,2.8vw,2.15rem); font-weight:800; line-height:1.35; letter-spacing:-.05em; }
+.start-intro strong { background:linear-gradient(transparent 65%,#d8f65a 65%); font-weight:950; }
+.start-card .start-description { margin:.6rem 0; font-size:.9rem; line-height:1.6; word-break:keep-all; }
+.start-card .start-goal { margin:.7rem 0 1rem; font-size:.78rem; color:#376045; font-weight:750; word-break:keep-all; }
 .space-quiz strong { font-size:clamp(.65rem,.85vw,.9rem); overflow-wrap:anywhere; }
 .space-quiz small { font-size:.65rem; }
 .consulting-label { display:inline-block; padding:.4rem .7rem; border-radius:2rem; background:#edf5dc; color:#24543b; font-weight:800; }
@@ -11,6 +18,39 @@
 .replay-item em { font-style:normal; font-weight:800; white-space:nowrap; }
 .start-music-note { display:block; margin-top:.85rem; color:#66766f; font-size:.8rem; }
 .toast { width:max-content; border-radius:14px; line-height:1.5; }
+@media(max-width:620px) {
+ .start-screen { padding:12px; }
+ .start-card { grid-template-columns:1fr; gap:.25rem; padding:18px 16px; }
+ .start-explorer { height:clamp(88px,19dvh,148px); }
+ .start-copy { padding:0; }
+ .start-card .start-logo { height:30px; width:70px; margin-bottom:8px; font-size:14px; }
+ .start-card h1 { font-size:clamp(18px,4.8vw,23px); }
+ .start-card .start-intro { margin:12px 0; font-size:clamp(22px,6vw,28px); }
+ .start-card .start-description { margin:8px 0; font-size:13px; line-height:1.5; }
+ .start-card .start-goal { margin:9px 0 13px; font-size:11px; }
+ .start-card .game-start-button { min-height:48px; font-size:16px; }
+ .start-music-note { margin-top:10px; font-size:11px; line-height:1.4; }
+}
+@media(max-height:650px) and (max-width:620px) {
+ .start-card { padding:12px 14px; }
+ .start-explorer { height:15dvh; }
+ .start-card .start-logo { height:26px; margin-bottom:5px; font-size:12px; }
+ .start-card .start-intro { margin:8px 0; font-size:22px; }
+ .start-card .start-description { font-size:12px; margin:6px 0; }
+ .start-card .start-goal { margin:7px 0 10px; }
+ .start-music-note { margin-top:7px; font-size:10px; }
+}
+@media(max-height:520px) and (min-width:621px) {
+ .start-screen { padding:10px; }
+ .start-card { padding:14px 22px; gap:16px; }
+ .start-card .start-logo { display:none; }
+ .start-card h1 { font-size:20px; }
+ .start-card .start-intro { font-size:24px; margin:9px 0; }
+ .start-card .start-description { font-size:12px; margin:6px 0; }
+ .start-card .start-goal { font-size:11px; margin:8px 0; }
+ .start-card .game-start-button { min-height:44px; font-size:15px; }
+ .start-music-note { font-size:10px; margin-top:8px; }
+}
 @media(max-width:800px) {
  .toast { left:12px; right:12px; bottom:135px; width:auto; max-width:none; padding:10px 12px; font-size:13px; transform:translateY(2rem); }
  .toast.show { transform:translateY(0); }
