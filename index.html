@@ -577,7 +577,7 @@ dialog::backdrop { background: rgba(8,26,22,.64); backdrop-filter: blur(5px); }
         <span><small>협업 사회적가치</small><strong><span id="synergyTopCount">0</span> / 30 수집</strong></span>
       </div>
       <div class="progress-track-wrap">
-        <div class="progress-copy"><span>클리어 목표 · 사회적가치</span><strong><span id="completedCount">0</span> / 5</strong></div>
+        <div class="progress-copy"><div class="goal-heading"><span>클리어 목표 · 사회적가치</span><button id="synergyListButton" class="synergy-list-button" type="button" aria-label="협업 사회적가치 목록 열기" aria-haspopup="dialog">☷ 목록</button></div><strong><span id="completedCount">0</span> / 5</strong></div>
         <div class="progress-track" aria-hidden="true"><span id="progressBar"></span></div>
       </div>
       <div class="score-card"><small>모은 가치</small><strong><span id="valueScore">0</span>점</strong></div>
@@ -1095,6 +1095,15 @@ function renderSynergies() {
     return `<article class="synergy-item ${unlocked ? "unlocked" : ""}"><strong>${unlocked ? "✨" : "🔒"} ${escapeHtml(names)}</strong><p>${escapeHtml(synergy.mission)}</p><small>${unlocked ? "협업 시너지 수집 완료" : `기업 체험 ${completed} / ${synergy.businesses.length}`}</small><div class="synergy-progress" aria-hidden="true"><i style="width:${(completed / synergy.businesses.length) * 100}%"></i></div><span class="synergy-value">${escapeHtml(synergy.value)}</span></article>`;
   }).join("");
 }
+
+function openSynergyList() {
+  if (moving || minigameDialog.open) return;
+  renderSynergies();
+  dialogContent.innerHTML = `<article><header class="company-hero"><h2 id="dialogTitle">협업 사회적가치 목록</h2><p>현재 ${state.synergies.length}개 수집 · 클리어 목표 5개</p></header><div class="company-body"><p class="synergy-modal-guide">연결된 기업의 체험이나 지원센터 컨설팅을 모두 완료하면 협업 사회적가치를 수집해요. 수집한 가치와 완성에 필요한 기업을 확인해 보세요.</p><div class="synergy-modal-list">${document.querySelector('#synergyList').innerHTML}</div><div class="dialog-actions"><button class="primary-button" id="closeSynergyList" type="button">지도로 돌아가기</button></div></div></article>`;
+  document.querySelector('#closeSynergyList').onclick = () => dialog.close();
+  if (!dialog.open) dialog.showModal();
+}
+document.querySelector('#synergyListButton').onclick = openSynergyList;
 
 
 let explorerDirection = 'down';

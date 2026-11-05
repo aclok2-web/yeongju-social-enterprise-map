@@ -1,4 +1,17 @@
 .map-actions { display:flex; align-items:center; gap:.4rem; }
+.progress-copy { align-items:center; gap:8px; }
+.goal-heading { display:flex; align-items:center; gap:8px; min-width:0; }
+.progress-copy > strong { flex-shrink:0; white-space:nowrap; }
+.synergy-list-button { min-height:32px; padding:4px 8px; flex-shrink:0; border:1px solid #b5c9a4; border-radius:7px; color:#123f35; background:#eff8d8; font-size:12px; font-weight:800; cursor:pointer; }
+.synergy-list-button:hover { background:#d8f65a; }
+.synergy-list-button:focus-visible { outline:3px solid #458060; outline-offset:2px; }
+.synergy-modal-guide { margin-top:0; color:#56705b; font-size:14px; line-height:1.6; }
+.synergy-modal-list { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr)); gap:10px; }
+.synergy-modal-list .synergy-item { padding:14px; }
+.synergy-modal-list .synergy-item strong { font-size:15px; }
+.synergy-modal-list .synergy-item p { margin:8px 0; font-size:13px; line-height:1.5; }
+.synergy-modal-list .synergy-item small { font-size:12px; }
+.synergy-modal-list .synergy-value { font-size:12px; }
 .music-button,.replay-button { min-height:42px; padding:.5rem .75rem; border:1px solid #c9d9ca; border-radius:.7rem; background:white; color:#123f35; font-weight:800; cursor:pointer; }
 .music-button[aria-pressed="true"] { background:#eff8c8; }
 .start-card { grid-template-columns:minmax(0,.65fr) minmax(0,1fr); width:min(54rem,100%); gap:1.4rem; padding:1.8rem; }
@@ -52,6 +65,9 @@
  .start-music-note { font-size:10px; margin-top:8px; }
 }
 @media(max-width:800px) {
+ .goal-heading { gap:5px; }
+ .goal-heading > span { font-size:12px; }
+ .synergy-list-button { font-size:11px; padding:4px 6px; }
  .toast { left:12px; right:12px; bottom:135px; width:auto; max-width:none; padding:10px 12px; font-size:13px; transform:translateY(2rem); }
  .toast.show { transform:translateY(0); }
  .topbar { gap:.4rem; min-height:52px; }
